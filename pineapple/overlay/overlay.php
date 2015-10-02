@@ -36,12 +36,12 @@ if (isset($_GET['retreive_stations'])) {
 
 ?>
 
-<fieldset>
+<fieldset style='width: 250px'>
     <legend>Scan Settings</legend>
     Type:
     <input type='radio' name='scan_type' value='ap' checked>AP Only
     <input type='radio' name='scan_type' value='ap_client'>AP & Client
-    &nbsp;&nbsp;&nbsp;
+    <br /><br />
     Duration:
     <select name='scan_duration'>
         <option value='15'>15 Seconds</option>
@@ -52,9 +52,9 @@ if (isset($_GET['retreive_stations'])) {
         <option value='300'>5 Minutes</option>
         <option value='600'>10 Minutes</option>
     </select>
-    &nbsp;&nbsp;&nbsp;
+    <br />
     Continuous: <input type='checkbox' name='auto_scan'>
-    &nbsp;&nbsp;&nbsp;
+    <br /><br />
     <a id='overlay_start_stop' href='#' onclick="overlay_toggle_scan(); return false;">START SCAN</a> <span class='overlay_message'></span>
     
 </fieldset>

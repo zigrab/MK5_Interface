@@ -1,8 +1,8 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <div style='text-align: right'><a href='#' class="refresh" onclick='refresh_network()'> </a></div> 
 
-Wlan0 <?= wlan0_status() == true ? '<font color="lime">Enabled</font>.&nbsp; | <a href="#sys/network/disable/wlan0/refresh_network">Disable</a>' : '<font color="red">Disabled</font>. | <a href="#sys/network/enable/wlan0/refresh_network">Enable</a>';  ?><br />
-Wlan1 <?= wlan1_status() == true ? '<font color="lime">Enabled</font>.&nbsp; | <a href="#sys/network/disable/wlan1/refresh_network">Disable</a>' : '<font color="red">Disabled</font>. | <a href="#sys/network/enable/wlan1/refresh_network">Enable</a>';  ?><br /> <br />
+Wlan0<help id='network:small_wlan0'></help> <?= wlan0_status() == true ? '<font color="lime">Enabled</font>.&nbsp; | <a href="#sys/network/disable/wlan0/refresh_network">Disable</a>' : '<font color="red">Disabled</font>. | <a href="#sys/network/enable/wlan0/refresh_network">Enable</a>';  ?><br />
+Wlan1<help id='network:small_wlan1'></help> <?= wlan1_status() == true ? '<font color="lime">Enabled</font>.&nbsp; | <a href="#sys/network/disable/wlan1/refresh_network">Disable</a>' : '<font color="red">Disabled</font>. | <a href="#sys/network/enable/wlan1/refresh_network">Enable</a>';  ?><br /> <br />
 
 <div id='internet_ip'>Internet IP: <a href='JAVASCRIPT: display_internet()'>Show</a></div><br />
 

@@ -1,19 +1,6 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
-<h2>Karma Configuration</h2>
+<h2>Karma Configuration<help id='pineap:karma_config'></help></h2>
 <center><div id='karma_message'/></center>
-<fieldset>
-  <legend>SSID Configuration</legend>
-  <form id="karma_ssid_form" method="post" action="/components/system/pineap/functions.php?change_ssid" onSubmit='$(this).AJAXifyForm(karma_handle_form); return false;'>
-    <table>
-      <tr><td>SSID:</td><td><input type='text' name='ssid' placeholder='<?=exec("hostapd_cli -p /var/run/hostapd-phy0 karma_get_ssid")?>'/></td></tr>
-      <tr><td>Persistent:</td><td><input type='checkbox' name='persistent' /></td></tr>
-      <tr><td><input type='submit' value='Update'></td></tr>
-    </table>
-  </form>
-</fieldset>
-
-<br /><br />
-
 <fieldset>
   <legend>Client Blacklisting - <a href="#sys/pineap/action/get_macs/popup">View List</a></legend>
   <form id="karma_client_bw_form" method="post" action="/components/system/pineap/functions.php?client_list" onSubmit='$(this).AJAXifyForm(karma_handle_form); return false;'>

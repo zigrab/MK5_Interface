@@ -122,7 +122,7 @@ class PineAP
     public function delSSID($ssid)
     {
         if ($this->communicate("del_ssid:" . $ssid)) {
-            exec("sed '/{$ssid}/d' -i /etc/pineapple/ssid_file");
+            exec("sed -r '/^({$ssid})$/d' -i /etc/pineapple/ssid_file");
             return true;
         }
         return false;

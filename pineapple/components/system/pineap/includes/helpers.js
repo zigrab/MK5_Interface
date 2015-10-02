@@ -112,7 +112,7 @@ function refresh_report(){
 
 
 function save_pineap_settings() {
-  get_tab("/components/system/pineap/tabs/pineap.php");
+  refresh_current_tab();
   setTimeout(function(){
     $("#pineap_message").html("<center><span class='success'>Settings Saved.</span></center>");
   },500);

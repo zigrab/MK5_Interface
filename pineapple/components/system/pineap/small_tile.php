@@ -3,7 +3,7 @@ namespace pineapple;
 
 
 include_once('/pineapple/includes/api/tile_functions.php');
-echo "MK5 Karma ";
+echo "MK5 Karma<help id='pineap:karma'></help> ";
 if (get_karma_status()) {
     echo "<font color=\"lime\">Enabled</font>.&nbsp; | <a href='#sys/pineap/action/stop_karma/pineap_reload_tile'>Stop</a><br />";
 } else {
@@ -20,28 +20,28 @@ if (get_autostart_status()) {
 echo "<br /><br />";
 
 
-echo "PineAP ";
+echo "PineAP<help id='pineap:pineap'></help> ";
 if (get_pineap_status()) {
     echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_pineap/pineap_reload_tile'>Disable</a><br />";
 } else {
-    echo "<span class='error'>Disabled</span>. | <a href='#sys/pineap/action/start_pineap/pineap_reload_tile'>Enable</a><br />";
+    echo "<span id='pineap_status'><span class='error'>Disabled</span>. | <a href='#' onclick='start_pineap()'>Enable</a></span><br />";
 }
 
-echo "Dogma ";
+echo "Dogma<help id='pineap:dogma'></help> ";
 if (get_beaconer_status()) {
     echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_beaconer/pineap_reload_tile'>Disable</a><br />";
 } else {
     echo "<span class='error'>Disabled</span>. &nbsp;| <a href='#sys/pineap/action/start_beaconer/pineap_reload_tile'>Enable</a><br />";
 }
 
-echo "Beacon Response ";
+echo "Beacon Response<help id='pineap:beacon_response'></help> ";
 if (get_responder_status()) {
     echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_responder/pineap_reload_tile'>Disable</a><br />";
 } else {
     echo "<span class='error'>Disabled</span>. | <a href='#sys/pineap/action/start_responder/pineap_reload_tile'>Enable</a><br />";
 }
 
-echo "Auto Harvester ";
+echo "Auto Harvester<help id='pineap:harvester'></help> ";
 if (get_harvester_status()) {
     echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_harvester/pineap_reload_tile'>Disable</a><br />";
 } else {
@@ -113,4 +113,12 @@ function get_autostart_status()
     function pineap_reload_tile(){
         refresh_small('pineap', 'sys');
     }
+
+    function start_pineap() {
+        $("#pineap_status").html('Starting <img style="height: 1em; width: 1em;" src="/includes/img/throbber.gif">')
+        $.get("/components/system/pineap/functions.php?action=start_pineap", function(){
+            refresh_small('pineap', 'sys');
+        });
+    }
+
 </script>

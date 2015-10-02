@@ -20,10 +20,11 @@ if (isset($_GET['action'])) {
         case 'start_pineap':
             $mac = exec("ifconfig wlan0 | grep HWaddr | awk '{print $5}'");
             $chan = exec("iw dev wlan0 info | grep channel | awk '{print $2}'");
-            if (trim(exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'")) == "") {
-                exec("airmon-ng start wlan1");
-            }
+            
             $iface = exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'");
+            if (trim($iface) == "") {
+                $iface = exec("airmon-ng start wlan1 | grep 'enabled on' | awk '{print $5}' | sed s'/.$//'");
+            }
 
             exec("ifconfig wlan1 down");
             exec("echo 'pinejector {$iface} {$chan} {$mac}' | at now");
@@ -107,7 +108,7 @@ if(isset($_GET['ssid_list'])){
 if (isset($_GET['pineap_add_ssid'])) {
     $pineAP = new PineAP();
     if ($pineAP->addSSID(rawurldecode($_GET['pineap_add_ssid']))) {
-        echo $_GET['pineap_add_ssid'];
+        echo htmlspecialchars_decode(rawurldecode($_GET['pineap_add_ssid']), ENT_QUOTES);
     }
     
 }

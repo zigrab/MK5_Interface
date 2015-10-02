@@ -3,7 +3,6 @@
 
 if(isset($_GET['autossh'])){
   echo autossh($_GET['autossh']);
-  echo $_GET['autossh'];
 }
 
 if(isset($_GET['action'])){

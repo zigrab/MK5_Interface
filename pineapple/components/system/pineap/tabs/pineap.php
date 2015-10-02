@@ -16,7 +16,7 @@ function get_pineap_status()
 touch("/etc/pineapple/ssid_file");
 ?>
 
-<h2>PineAP Configuration</h2>
+<h2>PineAP Configuration<help id='pineap:pineap_config'></help></h2>
 <?php if(!get_pineap_status()) echo "<center><span class='error'>PineAP is not running. Cannot load settings. <br /><a href='#sys/pineap/action/start_pineap/save_pineap_settings_wait'>Start Now</a></span></center>"; ?>
 
 <span id='pineap_message'></span>
@@ -44,7 +44,7 @@ touch("/etc/pineapple/ssid_file");
 
 <fieldset>
     <legend>SSID Management</legend>
-    <textarea rows='20' cols='100' readonly><?=file_get_contents("/etc/pineapple/ssid_file")?></textarea>
+    <textarea rows='20' style='min-width:100%;' readonly><?=file_get_contents("/etc/pineapple/ssid_file")?></textarea>
     <br /><br />
     <form method="POST" action="/components/system/pineap/functions.php?pineAP_SSID" onsubmit="$(this).AJAXifyForm(save_pineap_settings); return false;">
         <input type='text' name='ssid' placeholder='SSID'> <input type='submit' name='add_ssid' value='Add SSID'>

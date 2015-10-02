@@ -125,7 +125,7 @@ function draw_ap_data(ap_list)
     $(".overlay_col").html("");
     var col = 1;
     for (var bssid in ap_list) {
-        var SSID = (ap_list[bssid]['ESSID'] == "") ? "<span class='error'>Hidden SSID</span>" : "<a href='#' class='success' onclick='recon_ap_action(\"" + ap_list[bssid]['ESSID'] + "\"); return false;'>" + ap_list[bssid]['ESSID'] + "</a>"; 
+        var SSID = (ap_list[bssid]['ESSID'].trim() == "") ? "<span class='error'>Hidden SSID</span>" : "<a href='#' class='success' onclick='recon_ap_action(\"" + escape_ssid(ap_list[bssid]['ESSID']) + "\"); return false;'>" + ap_list[bssid]['ESSID'] + "</a>"; 
         var ap_item = "<div class='overlay_ap'><fieldset id='"+bssid.replace(/:/g,'')+"'>";
         ap_item += "<legend>" + SSID + " - "+ ap_list[bssid]['quality'] +"&nbsp;</legend>";
         if(typeof ap_list[bssid]['security'] !== "undefined"){
@@ -242,7 +242,7 @@ function recon_ap_action(ssid) {
     var popup_html = "";
 
     popup_html += "<b>Access Point Actions:</b><br /><br />";
-    popup_html += "<a href='#sys/pineap/pineap_add_ssid/" + encodeURIComponent(ssid) + "/pineAP_add_ssid_callback'>Add to PineAP SSID list</a>";
+    popup_html += "<a href='#sys/pineap/pineap_add_ssid/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add to PineAP SSID list</a>";
     popup(popup_html);
 }
 
@@ -254,4 +254,13 @@ function pineAP_add_ssid_callback(ssid) {
         popup("<span class='error'>Error adding SSID. PineAP must be turned on to add SSIDs to the list.</span>");
     }
     
+}
+
+function escape_ssid(ssid) {
+    return ssid
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }

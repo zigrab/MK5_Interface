@@ -1,0 +1,145 @@
+#!/usr/bin/python
+
+import socket
+import os
+import time
+import sys
+import re
+
+def communicate(command):
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        sock.connect('/var/run/pinejector.sock')
+        sock.send(command)
+    except:
+        print 'Error connecting to PineAP. Have you started it yet?'
+
+def start_pineAP():
+    print "Starting PineAP. This may take a few seconds."
+    stop_pineAP()
+    os.system("pineapple karma start &> /dev/null")
+    os.system("if ! ifconfig -a | grep -q mon0; then airmon-ng start wlan1 &>/dev/null; fi;")
+    os.system("mac=$(ifconfig wlan0 | grep HWaddr | awk '{print $5}'); chan=$(iw dev wlan0 info | grep channel | awk '{print $2}'); echo 'pinejector mon0 '$chan' '$mac | at now &> /dev/null")
+    print "PineAP started."
+
+def stop_pineAP():
+    os.system("pineapple karma stop &> /dev/null")
+    os.system("killall pinejector &> /dev/null")
+
+def check_MAC(mac):
+    return bool(re.match("([a-fA-F0-9]{2}[:]?){6}$", mac))
+
+def interpret_commands(commands):
+    if len(commands) < 2:
+        print_usage()
+        sys.exit()
+
+    fail = False
+
+    if commands[1] == "start":
+        start_pineAP()
+        sys.exit()
+    elif commands[1] == "stop":
+        stop_pineAP()
+        sys.exit()
+
+    if len(commands) < 3:
+        print_usage()
+        sys.exit()
+
+    elif commands[1] == "dogma":
+        if commands[2] == "start":
+            communicate("beaconer:on")
+        elif commands[2] == "stop":
+            communicate("beaconer:off")
+        else:
+            fail = True
+    elif commands[1] == "responder":
+        if commands[2] == "start":
+            communicate("responder:on")
+        elif commands[2] == "stop":
+            communicate("responder:off")
+        else:
+            fail = True
+    elif commands[1] == "harvester":
+        if commands[2] == "start":
+            communicate("harvester:on")
+        elif commands[2] == "stop":
+            communicate("harvester:off")
+        else:
+            fail = True
+    elif commands[1] == "settarget":
+        if check_MAC(commands[2]):
+            communicate("target:" + commands[2])
+        else:
+            fail = True
+    elif commands[1] == "setsource":
+        if check_MAC(commands[2]):
+            communicate("source:" + commands[2])
+        else:
+            fail = True
+    elif commands[1] == "addssid":
+        communicate("add_ssid:" + commands[2])
+    elif commands[1] == "delssid":
+        communicate("del_ssid:" + commands[2])
+        os.system("sed -r '/^(" + commands[2] + ")$/d' -i /etc/pineapple/ssid_file")
+    elif commands[1] == "beaconinterval":
+        if commands[2] == "low":
+            communicate("beacon_interval:low")
+        elif commands[2] == "normal":
+            communicate("beacon_interval:normal")
+        elif commands[2] == "fast":
+            communicate("beacon_interval:agressive")
+        else:
+            fail = True
+    elif commands[1] == "responseinterval":
+        if commands[2] == "low":
+            communicate("response_interval:low")
+        elif commands[2] == "normal":
+            communicate("response_interval:normal")
+        elif commands[2] == "fast":
+            communicate("response_interval:agressive")
+        else:
+            fail = True
+    else:
+        fail = True
+
+    if fail:
+        print_usage()
+
+def print_usage():
+    print ""
+
+    print "PineAP command line utility"
+    print "Usage: infusion pineap <option> [arguments]"
+    print ""
+
+    print "Options:"
+    print "\tstart \t - starts PineAP"
+    print "\tstop \t - stops PineAP"
+
+    print ""
+
+    print "\tdogma [start|stop] \t - starts / stops Dogma"
+    print "\tresponder [start|stop] \t - starts / stops Beacon Response"
+    print "\tharvester [start|stop] \t - starts / stops Auto Harvester"
+
+    print ""
+
+    print "\tsetsource [mac] \t - set PineAP's source. eg: aa:bb:cc:dd:ee:ff"
+    print "\tsettarget [mac] \t - set PineAP's target. eg: aa:bb:cc:dd:ee:ff"
+
+    print ""
+
+    print "\tbeaconinterval [low, normal, fast] \t - Change Beacon interval"
+    print "\tresponseinterval [low, normal, fast] \t - Change Response interval"
+
+    print ""
+
+    print "\taddssid '[ssid]' \t- Adds SSID to PineAP."
+    print "\tdelssid '[ssid]' \t- Deletes SSID from PineAP."
+
+    print ""
+
+if __name__ == "__main__":
+    interpret_commands(sys.argv)

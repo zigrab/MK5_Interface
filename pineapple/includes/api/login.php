@@ -19,6 +19,7 @@ if (isset($_POST['login'])) {
     if ($submitted_pass == $actual_pass && $_POST['username'] == "root") {
 
         $_SESSION['logged_in'] = true;
+        $_SESSION['_csrfToken'] = sha1(session_id());
         header('Location: /');
 
     } else {

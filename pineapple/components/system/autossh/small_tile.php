@@ -1,7 +1,7 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <?php
 
-echo 'AutoSSH ';
+echo 'AutoSSH<help id="autossh:small_autossh"></help> ';
 if(autoSSH_connected()) {
   echo "<font color=\"lime\">Connected</font>.&nbsp;&nbsp;&nbsp; | <a href='#sys/autossh/autossh/stop/refresh_autossh'>Disconnect</a>";
 } else {

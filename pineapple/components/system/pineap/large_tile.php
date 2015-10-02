@@ -16,4 +16,5 @@ $pineapple->drawTabs(
 );
 
 ?>
+
 <script type='text/javascript' src='<?=$rel_dir?>includes/helpers.js'></script>
