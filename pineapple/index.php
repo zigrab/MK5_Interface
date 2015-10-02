@@ -27,6 +27,8 @@ if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use this U
   <script src="includes/js/jquery.min.js"></script>
   <script src="includes/js/functions.js" type="text/javascript" ></script>
   <noscript><meta http-equiv="refresh" content="0;url=index.php?noJS" /></noscript>
+  <link rel="shortcut icon" href="/includes/img/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/includes/img/favicon.ico" type="image/x-icon">
 </head>
 
 <body onload="init()">

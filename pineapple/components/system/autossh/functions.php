@@ -39,11 +39,11 @@ function autossh($state){
     break;
 
     case 'enable':
-    exec('/etc/init.d/ssh_boot enable');
+    exec('/etc/init.d/autossh enable');
     break;
 
     case 'disable':
-    exec('/etc/init.d/ssh_boot disable');
+    exec('/etc/init.d/autossh disable');
     break;
   }
 

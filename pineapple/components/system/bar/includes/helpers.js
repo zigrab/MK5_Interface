@@ -49,3 +49,21 @@ function update_small(data){
     $("#bar_updates").html(data); 
   }
 }
+
+function infusion_toggle(){
+  if($("#infusion_toggle").text() == "Show"){
+    $("#infusion_toggle").text("Hide");
+  }else{
+    $("#infusion_toggle").text("Show");
+  }
+  $("#available_infusions").toggle();
+}
+
+function cli_infusion_toggle(){
+  if($("#cli_infusion_toggle").text() == "Show"){
+    $("#cli_infusion_toggle").text("Hide");
+  }else{
+    $("#cli_infusion_toggle").text("Show");
+  }
+  $("#available_cli_infusions").toggle();
+}

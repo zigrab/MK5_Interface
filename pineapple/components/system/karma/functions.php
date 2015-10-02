@@ -19,6 +19,9 @@ if(isset($_GET['action'])){
 		case 'get_log':
 		echo get_log();
 		break;
+		case 'clear_log':
+		exec("echo '' > /tmp/karma-phy0.log");
+		break;
 		case 'get_report':
 		echo get_detailed_report();
 		break;
@@ -38,6 +41,7 @@ if(isset($_GET['action'])){
 }
 
 if(isset($_GET['change_ssid'])){
+	$_POST['ssid'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
 	echo change_ssid($_POST['ssid'], $_POST['persistent']);
 }
 
@@ -50,7 +54,7 @@ if(isset($_GET['client_list'])){
 }
 
 if(isset($_GET['ssid_list'])){
-	$_POST['ssid'] = addslashes($_POST['ssid']);
+	$_POST['ssid'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
 	if($_POST['remove_ssid'] == 'true'){
 		echo del_ssid($_POST['ssid']);
 	}else{
@@ -104,22 +108,22 @@ function change_ssid_mode(){
 }
 
 function change_ssid($ssid, $persistence=false){
-	exec('hostapd_cli -p /var/run/hostapd-phy0 karma_change_ssid "'.$ssid.'"');
+	exec("hostapd_cli -p /var/run/hostapd-phy0 karma_change_ssid '".$ssid."'");
 	if($persistence){
-		exec("uci set wireless.@wifi-iface[0].ssid=\"".$ssid."\"");
+		exec("uci set wireless.@wifi-iface[0].ssid='".$ssid."'");
 		exec("uci commit wireless");
 	}
 	return "<font color='lime'>SSID changed to '$ssid'.</font>";
 }
 
 function add_ssid($ssid){
-	exec('pineapple karma add_ssid "'.$ssid.'"');
+	exec("pineapple karma add_ssid '".$ssid."'");
 	return "<font color='lime'>SSID added to list.</font>";
 
 }
 
 function del_ssid($ssid){
-	exec('pineapple karma del_ssid "'.$ssid.'"');
+	exec("pineapple karma del_ssid '".$ssid."'");
 	return "<font color='lime'>SSID removed from list.</font>";
 }
 

@@ -43,5 +43,6 @@ function update_tz(data){
   update_message("<font color='lime'>Timezone changed.</font>");
   $.get("/components/system/configuration/functions.php?get_tz", function(data){
     $("#config_tz").text(data);
+    $("input[name=custom_zone]").val("");
   });
 }

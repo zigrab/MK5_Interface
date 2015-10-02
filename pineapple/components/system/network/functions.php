@@ -103,6 +103,11 @@ function mobileRedial(){
   return '<font color="lime">Redialing.</font>';
 }
 
+if(isset($_GET['restart_dns'])){
+  exec("/etc/init.d/dnsmasq restart");
+  echo "<font color='lime'>DNS Restarted</font>";
+}
+
 if(isset($_GET['scan'])){
 
   $station_list = array();
@@ -152,20 +157,22 @@ if(isset($_GET['connect'])){
 
   $ap = json_decode($_GET['connect']);
 
-
+  $ap->ESSID = str_replace("\\", "\\\\", $ap->ESSID);
+  $ap->ESSID = str_replace("'", "'\"'\"'", $ap->ESSID);
   $ssid = $ap->ESSID;
+
   $channel = $ap->channel;
 
   if($ap->key != null){
     $ap->key = base64_decode(rawurldecode($ap->key));
     $ap->key = str_replace("\\", "\\\\", $ap->key);
-    $ap->key = str_replace("\"", "\\\"", $ap->key);
+    $ap->key = str_replace("'", "'\"'\"'", $ap->key);
   }
 
   exec("ifconfig wlan1 down");
   exec("uci set wireless.@wifi-iface[1].mode=sta");
   exec("uci set wireless.@wifi-iface[1].network=wan");
-  exec("uci set wireless.@wifi-iface[1].ssid=\"".$ssid."\"");
+  exec("uci set wireless.@wifi-iface[1].ssid='".$ssid."'");
   exec("uci set wireless.@wifi-device[1].channel=\"".$channel."\"");
 
   if($ap->security == null){
@@ -181,7 +188,7 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA2->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
+    exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
     exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
   }elseif($ap->security->WPA2 != null){
     $mode = "psk2";
@@ -192,7 +199,7 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA2->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
+    exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
     exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
   }elseif($ap->security->WPA != null) {
     $mode = "psk";
@@ -203,10 +210,10 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
+    exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
     exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
   }elseif($ap->security->WEP){
-   exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
+   exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
    exec("uci set wireless.@wifi-iface[1].encryption=wep");
  }
  exec("uci commit wireless");

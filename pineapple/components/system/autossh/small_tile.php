@@ -9,14 +9,14 @@ if(autoSSH_connected()) {
 }
 
 echo "<br />";
-/*
+
 echo 'Autostart: ';
 if(autoSSH_autostart()) {
   echo "<font color=\"red\"><b>Disabled</b></font>.&nbsp;&nbsp; | <a href='#sys/autossh/autossh/enable/refresh_autossh'>Enable</a>";
 } else {
   echo "<font color=\"lime\"><b>Enabled</b></font>.&nbsp;&nbsp;&nbsp; | <a href='#sys/autossh/autossh/disable/refresh_autossh'>Disable</a>";
 }
-*/
+
 
 function autoSSH_connected(){
   exec('pgrep autossh', $pids);
@@ -27,7 +27,7 @@ function autoSSH_connected(){
 }
 
 function autoSSH_autostart(){
-  if(file_exists('/etc/rc.d/S99zssh_boot')){
+  if(file_exists('/etc/rc.d/S80autossh')){
     return false;
   }
   return true;

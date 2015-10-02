@@ -4,7 +4,6 @@ dest=$1
 name=$2
 version=$3
 infusionType=$4
-echo $infu
 
 if [[ $dest == "internal" ]]
   then

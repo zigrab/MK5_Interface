@@ -3,7 +3,7 @@
 <center><div id='config_message'></div></center>
 <fieldset>
   <legend>Time Zone Settings</legend>
-  Current timezone: <span id='config_tz'><?=exec("date +%Z%z | cut -c 1-6")?></span><br /><br />
+  Current timezone: <span id='config_tz'><?=exec("date +%Z%z")?></span><br /><br />
   <form id='config_change_time' method='POST' action='/components/system/configuration/functions.php?change_tz' onSubmit='$(this).AJAXifyForm(update_tz); return false;'>
     New Time Zone:
     <select name="time" id="time">
@@ -33,7 +33,9 @@
       <option value="-11">(GMT +11:00) Magadan, Solomon Islands, New Caledonia</option>
       <option value="-12">(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka</option>
     </select>
-    <input type='submit' name='change_time' value='Change Time'>
+    <br />
+    or custom Zone:<input type="text" name="custom_zone"><br />
+    <input type='submit' name='change_time' value='Change Time Zone'>
   </form>
 </fieldset>
 
@@ -53,10 +55,10 @@
   <legend>Change Root Password</legend>
   <form id='config_change_password' method='POST' action='/components/system/configuration/functions.php?change_password' onSubmit='$(this).AJAXifyForm(update_message); return false;'>
     <table>
-    <tr><td>Old Password:</td><td><input type='password' name='old_password' placeholder='********'/></td></tr>
-    <tr><td>New Password:</td><td><input type='password' name='password' placeholder='********'/></td></tr>
-    <tr><td>Repeat Password:</td><td><input type='password' name='repeat' placeholder='********'/></td></tr> 
-    <tr><td><input type='submit' name='change_password' value='Change Password'></td></tr>
+      <tr><td>Old Password:</td><td><input type='password' name='old_password' placeholder='********'/></td></tr>
+      <tr><td>New Password:</td><td><input type='password' name='password' placeholder='********'/></td></tr>
+      <tr><td>Repeat Password:</td><td><input type='password' name='repeat' placeholder='********'/></td></tr> 
+      <tr><td><input type='submit' name='change_password' value='Change Password'></td></tr>
     </table>
   </form>
 </fieldset>

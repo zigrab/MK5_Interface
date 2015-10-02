@@ -84,6 +84,10 @@
         $("#network_message").html("<font color='lime'>Connection initiated. See below for connection details.</font><br /><br />")
       }
     });
+    if(check_connection_interval != undefined){
+      clearInterval(check_connection_interval);
+    }
+    check_connection_interval = setInterval(check_connection, 5*1000);
   }
 
   function disconnect(){
@@ -99,6 +103,10 @@
       if(data == "not_associated"){
         $("#connection_information").html("Not connected.. Refreshing in 10s.");
       }else{
+        if($("#network_message").text() == "Connecting, please wait."){
+          $("#network_message").html("<font color='lime'>Connection Established. See below for connection details.</font><br /><br />");
+        }
+        clearInterval(check_connection_interval);
         $("#connection_information").html("<b>Connected.</b><br /><br />"+data);
       }
     });

@@ -109,6 +109,7 @@ if(isset($_GET['finish_setup'])){
           echo "<pre>";
           echo "Password set successfully";
           echo "<p>The system is now completing the setup.\nPlease wait while the system restarts.</p>";
+          echo "For <font color='red'>best performance</font> you are advised to <b>format the Micro SD card ext4</b>. To do so click <b>Resouces</b> then <b>USB Info</b> then <b><u>Format SD Card</u/></b>.";
           echo "<div id='finish'></div>";
 
           echo "

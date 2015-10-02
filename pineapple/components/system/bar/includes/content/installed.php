@@ -1,5 +1,5 @@
-<?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <?php
+include_once('/pineapple/components/system/bar/functions.php');
 
 /*Grab all installed infusions by name*/
 $infusions = array();
@@ -22,7 +22,7 @@ if(empty($infusions)){
   foreach($infusions as $infusion){
     if(!in_array($infusion, $created_infusions)){
       $size = exec('du /pineapple/components/infusions/'.$infusion.'/ | awk \'{print $1}\'');
-      $version = str_replace(array("'", ";"), '', exec('cat /pineapple/components/infusions/'.$infusion.'/handler.php | grep "version" | awk \'{print $3}\''));
+      $version = get_infusion_version($infusion);
 
       $link = "<a href='#sys/bar/remove_infusion/$infusion/remove_infusion' onclick='return confirm(\"Are you sure you want to remove \\\"$infusion\\\"?\")'>Remove</a>";
       echo "<tr id='".$infusion."_tr'><td>$infusion</td><td><center>$version</center></td><td><center>".$size."kb</center></td><td>$link</td></tr>";

@@ -7,7 +7,7 @@ $rel_dir = str_replace('/pineapple', '', $directory);
 <h2>Network Info</h2>
 
 <fieldset>
-  <legend>Route</legend>
+  <legend>Route - <a href="#sys/network/restart_dns/true/notify">Restart DNS</a></legend>
   <?php
   exec('route', $route);
   echo '<pre>';

@@ -5,7 +5,7 @@
 #########################
 $name = 'AutoSSH';  #Name of tile
 $updatable = 'false';  #Should this tile auto-refresh
-$version = '1.2';
+$version = '1.3';
 
 
 #########################
