@@ -34,8 +34,7 @@ function get_status_bar()
 function get_num_clients()
 {
     $wlan0_clients = exec('iw dev wlan0 station dump | grep Station | wc -l');
-    $wlan01_clients = exec('iw dev wlan0-1 station dump | grep Station | wc -l');
-    return $wlan0_clients+$wlan01_clients;
+    return $wlan0_clients;
 }
 
 function get_notifications()
@@ -71,7 +70,7 @@ function send_notification($notification)
 
 function setup_notification_db()
 {
-    $db = new SQLite3("/etc/pineapple/mk5.db");
+    $db = new \SQLite3("/etc/pineapple/mk5.db");
     $db->exec(
         "CREATE TABLE IF NOT EXISTS notifications 
         (ID INTEGER PRIMARY KEY AUTOINCREMENT,

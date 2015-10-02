@@ -52,7 +52,7 @@ class Pineapple
      */
     public function online()
     {
-        $connection = @fsockopen("wifipineapple.com", 80);
+        $connection = @fsockopen("www.wifipineapple.com", 80);
         if ($connection) {
             fclose($connection);
             return true;

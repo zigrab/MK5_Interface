@@ -19,35 +19,35 @@ if (isset($_GET['display_help'])) {
 }
 
 
-if(isset($_GET['change_port'])){
+if (isset($_GET['change_port'])) {
     echo change_port($_POST['port']);
 }
 
-if(isset($_GET['change_password'])){
+if (isset($_GET['change_password'])) {
     echo ch_password($_POST['old_password'], $_POST['password'], $_POST['repeat']);
 }
 
-if(isset($_GET['update_button'])){
+if (isset($_GET['update_button'])) {
     echo update_button($_POST['wps_script']);
 }
 
-if(isset($_GET['update_cron'])){
+if (isset($_GET['update_cron'])) {
     echo update_cron($_POST['cron']);
 }
 
-if(isset($_GET['update_css'])){
+if (isset($_GET['update_css'])) {
     echo update_css($_POST['css']);
 }
 
-if(isset($_GET['update_spoofhost'])){
+if (isset($_GET['update_spoofhost'])) {
     echo update_spoofhost($_POST['spoofhost']);
 }
 
-if(isset($_GET['update_index'])){
+if (isset($_GET['update_index'])) {
     echo update_index($_POST['page']);
 }
 
-if(isset($_GET['execute'])){
+if (isset($_GET['execute'])) {
     echo execute($_POST['commands']);
 }
 
@@ -74,7 +74,7 @@ function toggle_cron($enable)
     return true;
 }
 
-if(isset($_GET['change_tz'])){
+if (isset($_GET['change_tz'])) {
     if(trim($_POST['custom_zone']) != ""){
         echo change_tz($_POST['custom_zone'], true);
     }else{
@@ -89,7 +89,7 @@ if(isset($_GET['get_tz'])){
 
 if(isset($_POST['dip'])){
 
-    $db = new SQLite3('/etc/pineapple/mk5.db');
+    $db = new \SQLite3('/etc/pineapple/mk5.db');
 
 
     foreach($_POST as $dips => $command){
@@ -147,7 +147,8 @@ function ch_password($current, $password, $repeat){
     }
 }
 
-function update_cron($crontab){
+function update_cron($crontab)
+{
     file_put_contents('/etc/crontabs/root', str_replace("\r", "", $crontab));
     exec('/etc/init.d/cron stop');
     exec('/etc/init.d/cron start');

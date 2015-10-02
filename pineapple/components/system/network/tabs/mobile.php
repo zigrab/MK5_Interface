@@ -100,7 +100,7 @@ $pppd_options = exec("uci show network.wan2.pppd_options | sed 's/^.*=//'");
 <br /><br />
 <fieldset>
   <legend>Help</legend>
-  For known configuration visit <a href="http://wifipineapple.com/modems">http://wifipineapple.com/modems</a>
+  For known configuration visit <a href="http://www.wifipineapple.com/modems">http://wifipineapple.com/modems</a>
 </fieldset>
 <br /><br />
 <fieldset>

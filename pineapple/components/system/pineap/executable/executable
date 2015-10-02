@@ -63,7 +63,6 @@ def interpret_commands(commands):
             fail = True
     elif commands[1] == "responder":
         if commands[2] == "start":
-            os.system("pineapple karma start &> /dev/null")
             communicate("responder:on")
         elif commands[2] == "stop":
             communicate("responder:off")
@@ -71,7 +70,6 @@ def interpret_commands(commands):
             fail = True
     elif commands[1] == "harvester":
         if commands[2] == "start":
-            os.system("pineapple karma start &> /dev/null")
             communicate("harvest:on")
         elif commands[2] == "stop":
             communicate("harvest:off")

@@ -174,7 +174,7 @@ toggle[checked] {
     display: inline-block;
 
     width: 22%;
-    min-width: 280px;
+    min-width: 290px;
     height: 250px;
     min-height: 190px;
     height: 30%;
@@ -389,6 +389,22 @@ toggle[checked] {
     margin-bottom: 15px;
 }
 
+
+.pineap_client_table {
+    border-collapse: collapse;
+}
+
+.pineap_client_table td {
+    padding: 5px;
+    padding-right: 15px;
+}
+
+.pineap_client_table tr:nth-child(even) {
+    background-color: #292929;
+}
+
+
+
 input[type=text], textarea, input[type=password] {
     border: 1px;
     background-color:black; 
@@ -497,7 +513,7 @@ help:before {
     padding: 10px;
     color: white;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
     max-height:100%;
     position: absolute;
     top: 62px;

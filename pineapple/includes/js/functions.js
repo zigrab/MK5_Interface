@@ -427,20 +427,29 @@ function toggle_notifications(){
 
 
 function get_tab(link, callback) {
+    get_tab.current_link = link;
+    clearTimeout(get_tab.long_wait);
+    get_tab.long_wait = setTimeout(function(){
+        $(".tabContainer").html('<center>Loading tab, please wait.</center>');
+    }, 250);
     $(".tabContainer").css({top: ($("#tabs_wrapper").position().top+62), left: 0});
     $.get(atob(link), function(data){
-        $(".tabContainer").html(data);
-        if (callback !== undefined) {
-            callback();
+        clearTimeout(get_tab.long_wait);
+        if (get_tab.current_link == link) {
+            $(".tabContainer").html(data);
+            $(".tabContainer").scrollTop(0);
+            if (callback !== undefined) {
+                callback();
+            }
         }
     });
 }
 
-function select_tab_content(tab) {
+function select_tab_content(tab, callback) {
     $(".tabContainer").scrollTop(0);
     $('#tabs li a').addClass('inactive');
     tab.removeClass('inactive');
-    get_tab(tab.attr('id'));
+    get_tab(tab.attr('id'), callback);
 }
 
 function refresh_current_tab(callback) {

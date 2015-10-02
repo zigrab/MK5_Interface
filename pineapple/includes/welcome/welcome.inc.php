@@ -48,7 +48,7 @@ function completeSetup()
 function firstMessage()
 {
     $text = 'Welcome to your WiFi Pineapple. Find support, infusions, news, and forums at 
-    <a href="http://wifipineapple.com" target="_blank">WiFiPineapple.com</a>.';
+    <a href="http://www.wifipineapple.com" target="_blank">WiFiPineapple.com</a>.';
     if (file_exists('etc/pineapple/init')) {
         $text .= '<br /><br />Please refresh this page once you see the blinking LED pattern on your pineapple.';
     } else {
@@ -100,7 +100,7 @@ function handlePassword($post)
     $password2 = $post['password2'];
     if (!empty($password) && $password == $password2 && ($post['eula'] && $post['sw_license'])) {
         file_put_contents('/pineapple/includes/welcome/license_accepted', '');
-        exec('date -s "2014-01-01 00:00:00"');
+        //exec('date -s "2014-01-01 00:00:00"');
         $pineapple->changePassword($password, $password);
         $text = 'Password set successfully.';
         $text .= '<br /><br />';
@@ -140,7 +140,7 @@ function handleSSID($post)
 
         if (trim(exec("mount | grep /sd | awk {'print $5'}")) != "vfat") {
             $text .= "<br /><br />For <font color='red'>best performance</font> you are advised to <b>format the Micro SD card ext4</b>. 
-                      To do so click <b>Resources</b> then <b>USB Info</b> then <b><u>Format SD Card</u/></b>.";
+                      To do so click <b>Resouces</b> then <b>USB Info</b> then <b><u>Format SD Card</u/></b>.";
         }
 
         $text .= "

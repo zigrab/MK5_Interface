@@ -5,7 +5,7 @@ if(isset($_GET['check_upgrade'])){
   if(online()){
     $current_version = trim(file_get_contents("/etc/pineapple/pineapple_version"));
     $context = stream_context_create(["ssl" => ["verify_peer" => true, "cafile" => "/etc/ssl/certs/cacert.pem"]]);
-    $online_data = explode("|", file_get_contents("https://wifipineapple.com/?downloads&current_version", false, $context));
+    $online_data = explode("|", file_get_contents("https://www.wifipineapple.com/?downloads&current_version", false, $context));
     $online_version = trim($online_data[0]);
     $online_md5 = trim($online_data[1]);
     if(version_compare($online_version, $current_version, ">")){
@@ -23,7 +23,7 @@ if(isset($_GET['check_upgrade'])){
 if(isset($_GET['load_changelog'])){
   if(online()){
     $context = stream_context_create(["ssl" => ["verify_peer" => true, "cafile" => "/etc/ssl/certs/cacert.pem"]]);
-    $current_changelog = file_get_contents("https://wifipineapple.com/?downloads&current_changelog", false, $context);
+    $current_changelog = file_get_contents("https://www.wifipineapple.com/?downloads&current_changelog", false, $context);
     echo $current_changelog;
   }else{
     echo "-1";
@@ -32,7 +32,7 @@ if(isset($_GET['load_changelog'])){
 
 if(isset($_GET['download_upgrade'])){
   $context = stream_context_create(["ssl" => ["verify_peer" => true, "cafile" => "/etc/ssl/certs/cacert.pem"]]);
-  $online_data = explode("|", file_get_contents("https://wifipineapple.com/?downloads&current_version", false, $context));
+  $online_data = explode("|", file_get_contents("https://www.wifipineapple.com/?downloads&current_version", false, $context));
   $size = $online_data[2];
   $md5 = $online_data[1];
 

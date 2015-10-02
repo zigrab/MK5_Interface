@@ -5,14 +5,29 @@ namespace overlay;
 class Overlay
 {
 
+    /**
+     * Constructor for the Overlay class. Simply sets the scanning interface.
+     * @param string $scanning_iface The interface to do the initial scan on.
+     */
     public function __construct($scanning_iface)
     {
         $this->scanning_iface = $scanning_iface;
     }
 
+
+    /**
+     * [generateAPs description]
+     * @return [type] [description]
+     */
     public function generateAPs()
     {
-        $this->scan();
+        set_time_limit(300);
+
+        unlink("/tmp/recon.ap");
+        unlink("/tmp/recon.ap.done");
+
+        exec("ifconfig {$this->scanning_iface} up");
+        exec("echo \"bash -c 'for i in {1..5}; do iw {$this->scanning_iface} scan >> /tmp/recon.ap; sleep 1; done; touch /tmp/recon.ap.done'\" | at now", $scan);
         return true;
     }
 
@@ -91,19 +106,6 @@ class Overlay
         echo json_encode($stations);
     }
 
-    private function scan()
-    {
-        set_time_limit(300);
-
-        unlink("/tmp/recon.ap");
-        unlink("/tmp/recon.ap.done");
-
-        $iface = $this->scanning_iface;
-        $ap_list = array();
-        exec("ifconfig {$iface} up");
-        exec("echo \"bash -c 'for i in {1..5}; do iw {$iface} scan >> /tmp/recon.ap; sleep 1; done; touch /tmp/recon.ap.done'\" | at now", $scan);
-        return true;
-    }
 
     private function parseScan()
     {

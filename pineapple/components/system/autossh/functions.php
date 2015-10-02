@@ -7,10 +7,6 @@ $pineapple->magicToggleFunctions(true);
 
 include_once('/pineapple/includes/api/tile_functions.php');
 
-$arrayName = array('' => , )
-
-;
-
 
 function toggle_autossh($enable)
 {
@@ -33,25 +29,25 @@ function toggle_autossh_autostart($enable)
 }
 
 
-if(isset($_GET['autossh'])){
+if (isset($_GET['autossh'])) {
     echo autossh($_GET['autossh']);
 }
 
-if(isset($_GET['action'])){
-    if($_GET['action'] == "generate"){
+if (isset($_GET['action'])) {
+    if ($_GET['action'] == "generate") {
         generate_key();
     }
 
-    if($_GET['action'] == "edit"){
+    if ($_GET['action'] == "edit") {
         echo edit_command($_POST['host'], $_POST['port'], $_POST['listen']);
     }
-    if($_GET['action'] == "knownhost_add"){
+    if ($_GET['action'] == "knownhost_add") {
         echo knownhost($_POST['knownhost_user'], $_POST['knownhost_host']);
     }
-    if($_GET['action'] == "authorizedkeys"){
+    if ($_GET['action'] == "authorizedkeys") {
         echo authorizedkeys($_POST['authorizedkeys']);
     }
-    if($_GET['action'] == "keycopy"){
+    if ($_GET['action'] == "keycopy") {
         echo keycopy($_POST['ak_user'], $_POST['ak_host'], $_POST['ak_password']);
     }
 
@@ -95,7 +91,8 @@ function knownhost($knownhost_user, $knownhost_host)
     return "<font color='lime'>Known Host added. Refresh Tab.</font>";
 }
 
-function authorizedkeys($authorizedkeys){
+function authorizedkeys($authorizedkeys)
+{
     file_put_contents('/root/.ssh/authorized_keys', str_replace("\r", "", $authorizedkeys));
     return '<font color="lime">Authorized Keys updated. Refresh Tab.</font>';
 }

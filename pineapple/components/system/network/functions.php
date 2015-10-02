@@ -183,7 +183,7 @@ if (isset($_GET['mobile_config'])) {
 if (isset($_GET['internet_ip'])) {
     if (online()) {
         $context = stream_context_create(["ssl" => ["verify_peer" => true, "cafile" => "/etc/ssl/certs/cacert.pem"]]);
-        echo  file_get_contents("https://wifipineapple.com/ip.php", false, $context);
+        echo  file_get_contents("https://www.wifipineapple.com/ip.php", false, $context);
     } else {
         echo '<font color="red">Error Connecting</font>';
     }

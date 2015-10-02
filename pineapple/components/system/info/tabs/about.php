@@ -28,11 +28,11 @@ with all laws of their locality. Hak5 LLC, WiFi Pineapple software developers an
 for unauthorized or unlawful use. Please hack responsibly.
 </p>
 <p>
-Documentation, Support, Updates, Infusions and Forum at <a href="http://wifipineapple.com/">WiFiPineapple.com</a>
+Documentation, Support, Updates, Infusions and Forum at <a href="https://www.wifipineapple.com/">WiFiPineapple.com</a>
 </p>
 <p>
 Looking for Training, Premium Support, Large Deployments or Custom Infusions?
-Contact us at <a href="http://wifipineapple.com/support">WiFiPineapple.com/support</a> for inquiries on off-site and on-site training, premium support tickets, client specific software or team packages.
+Contact us at <a href="http://www.wifipineapple.com/support">WiFiPineapple.com/support</a> for inquiries on off-site and on-site training, premium support tickets, client specific software or team packages.
 </p>
 </div>
 </center>

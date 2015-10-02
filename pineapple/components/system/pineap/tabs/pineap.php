@@ -17,7 +17,7 @@ touch("/etc/pineapple/ssid_file");
 ?>
 
 <h2>PineAP Configuration<help id='pineap:pineap_config'></help></h2>
-<?php if(!get_pineap_status()) echo "<center><span class='error'>PineAP is not running. Cannot load settings. <br /><a href='#sys/pineap/action/start_pineap/save_pineap_settings_wait'>Start Now</a></span></center>"; ?>
+<?php if(!get_pineap_status()) echo "<center><span class='error'>PineAP is not running. Cannot load settings. <br /><a href='#' onclick='save_pineap_settings_wait()'>Start Now</a></span></center>"; ?>
 
 <span id='pineap_message'></span>
 
@@ -43,7 +43,7 @@ touch("/etc/pineapple/ssid_file");
 <br /><br />
 
 <fieldset>
-    <legend>SSID Management - <a href='#sys/pineap/action/clear_ssids/refresh_current_tab'>Clear SSIDs</a></legend>
+    <legend>SSID Management - <a href='#sys/pineap/action/clear_ssids/save_pineap_settings'>Clear SSIDs</a></legend>
     <textarea rows='20' style='min-width:100%;' readonly><?=file_get_contents("/etc/pineapple/ssid_file")?></textarea>
     <br /><br />
     <form method="POST" action="/components/system/pineap/functions.php?pineAP_SSID" onsubmit="$(this).AJAXifyForm(save_pineap_settings); return false;">

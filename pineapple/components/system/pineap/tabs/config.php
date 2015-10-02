@@ -2,7 +2,8 @@
 <h2>Karma Configuration<help id='pineap:karma_config'></help></h2>
 <center><div id='karma_message'/></center>
 <fieldset>
-  <legend>Client Blacklisting - <a href="#sys/pineap/action/get_macs/popup">View List</a></legend>
+  <legend>Client Black / White Listing - <a href="#sys/pineap/action/get_macs/popup">View List</a></legend>
+  Currently in <?=exec('hostapd_cli -p /var/run/hostapd-phy0 karma_get_mac_black_white')?> mode. <a href='#sys/pineap/action/change_mac_mode/karma_reload_config'>Switch</a>
   <form id="karma_client_bw_form" method="post" action="/components/system/pineap/functions.php?client_list" onSubmit='$(this).AJAXifyForm(karma_handle_form); return false;'>
     <table>
       <tr><td>MAC to Blacklist:</td><td><input type='text' name='mac' /></td></tr>

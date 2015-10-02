@@ -58,13 +58,16 @@ if (isset($_GET['action'])) {
             echo get_log();
             break;
         case 'clear_log':
-            exec("echo '' > $(cat /etc/pineapple/karma_log_location)karma-phy0.log");
+            exec("echo '' > $(cat /etc/pineapple/karma_log_location)pineap.log");
             break;
-        case 'get_report':
-            echo get_detailed_report();
+        case 'get_client_report':
+            echo get_client_report();
             break;
         case 'change_ssid_mode':
             change_ssid_mode();
+            break;
+        case 'change_mac_mode':
+            change_mac_mode();
             break;
         case 'get_macs':
             echo get_macs();
@@ -72,7 +75,30 @@ if (isset($_GET['action'])) {
         case 'get_ssids':
             echo get_ssids();
             break;
+        case 'get_autostart_config':
+            echo get_autostart_config();
+            break;
+        case 'get_client_ssids':
+            echo get_client_ssids($_POST['mac_array']);
+            break;
+    }
+}
+
+
+function get_client_ssids($mac_array)
+{
+    $ssid_array = array();
+    $file = fopen(trim(file_get_contents("/etc/pineapple/karma_log_location")) . "pineap.log", "r");
+    while (($line = fgets($file)) !== false) {
+        if (strpos($line, "associate")) {
+            $mac = substr($line, 17, 17);
+            if (in_array($mac, $mac_array)) {
+                $ssid_array[$mac] = htmlspecialchars(substr($line, 61, -2), ENT_QUOTES);
+            }
         }
+    }
+
+    return json_encode($ssid_array);
 }
 
 
@@ -82,6 +108,26 @@ function toggle_karma($enable)
         exec("pineapple karma start");
     } else {
         exec("pineapple karma stop");
+    }
+    return true;
+}
+
+function toggle_probes($enable)
+{
+    if ($enable) {
+        exec("hostapd_cli -p /var/run/hostapd-phy0 karma_log_probes_enable");
+    } else {
+        exec("hostapd_cli -p /var/run/hostapd-phy0 karma_log_probes_disable");
+    }
+    return true;
+}
+
+function toggle_associations($enable)
+{
+    if ($enable) {
+        exec("hostapd_cli -p /var/run/hostapd-phy0 karma_log_associations_enable");
+    } else {
+        exec("hostapd_cli -p /var/run/hostapd-phy0 karma_log_associations_disable");
     }
     return true;
 }
@@ -147,29 +193,93 @@ function toggle_harvester($enable)
     }
 }
 
-if(isset($_POST['karma_log_location'])){
+function get_autostart_config()
+{
+    $karma_status = (exec('uci get pineap.autostart.karma') == '1') ? "checked" : "";
+    $probes_status = (exec('uci get pineap.autostart.log_probes') == '1') ? "checked" : "";
+    $associations_status = (exec('uci get pineap.autostart.log_associations') == '1') ? "checked" : "";
+
+    $pineap_status = (exec('uci get pineap.autostart.pineap') == '1') ? "checked" : "";
+    $harvester_status = (exec('uci get pineap.autostart.harvester') == '1') ? "checked" : "";
+    $beacon_response_status = (exec('uci get pineap.autostart.beacon_responses') == '1') ? "checked" : "";
+    $dogma_status = (exec('uci get pineap.autostart.dogma') == '1') ? "checked" : "";
+
+    echo "<center><h3>Configure Autostart</h3></center>";
+    echo "<form method='POST' action='/components/system/pineap/functions.php?save_autostart' onsubmit='$(this).AJAXifyForm(close_popup); return false;'>";
+    echo "<input type='checkbox' name='karma' $karma_status> MK5 Karma<br>";
+    echo "&nbsp;Log: <input type='checkbox' name='probes' $probes_status> Probes &nbsp;&nbsp;<input type='checkbox' name='associations' $associations_status> Associations";
+    echo "<br><br>";
+    echo "<input type='checkbox' name='pineap' $pineap_status> PineAP Daemon<br>";
+    echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='beacon_responses' $beacon_response_status> Send Beacon Responses<br>";
+    echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='harvester' $harvester_status> Harvest SSIDs<br>";
+    echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='dogma' $dogma_status> Dogma<br>";
+    echo "<br>";
+    echo "<center><input type='submit' value='Save Settings'>";
+    echo "</form>";
+}
+
+if (isset($_GET['save_autostart'])) {
+    if (isset($_POST['karma'])) {
+        exec("uci set pineap.autostart.karma=1");
+    } else {
+        exec("uci set pineap.autostart.karma=0");
+    }
+    if (isset($_POST['probes'])) {
+        exec("uci set pineap.autostart.log_probes=1");
+    } else {
+        exec("uci set pineap.autostart.log_probes=0");
+    }
+    if (isset($_POST['associations'])) {
+        exec("uci set pineap.autostart.log_associations=1");
+    } else {
+        exec("uci set pineap.autostart.log_associations=0");
+    }
+    if (isset($_POST['pineap'])) {
+        exec("uci set pineap.autostart.pineap=1");
+    } else {
+        exec("uci set pineap.autostart.pineap=0");
+    }
+    if (isset($_POST['harvester'])) {
+        exec("uci set pineap.autostart.harvester=1");
+    } else {
+        exec("uci set pineap.autostart.harvester=0");
+    }
+    if (isset($_POST['beacon_responses'])) {
+        exec("uci set pineap.autostart.beacon_responses=1");
+    } else {
+        exec("uci set pineap.autostart.beacon_responses=0");
+    }
+    if (isset($_POST['dogma'])) {
+        exec("uci set pineap.autostart.dogma=1");
+    } else {
+        exec("uci set pineap.autostart.dogma=0");
+    }
+    exec("uci commit pineap");
+}
+
+if (isset($_POST['karma_log_location'])) {
     file_put_contents("/etc/pineapple/karma_log_location", $_POST['karma_log_location']);
     echo "<font color='lime'>Log Location changed successfully to '".$_POST['karma_log_location']."'. Changes will take effect after a reboot.</font>";
 }
 
-if(isset($_GET['change_ssid'])){
+if (isset($_GET['change_ssid'])) {
     $_POST['ssid'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
     echo change_ssid($_POST['ssid'], $_POST['persistent']);
 }
 
-if(isset($_GET['client_list'])){
-    if($_POST['remove_client'] == 'true'){
+if (isset($_GET['client_list'])) {
+    if ($_POST['remove_client'] == 'true') {
         echo del_mac($_POST['mac']);
-    }else{
+    } else {
         echo add_mac($_POST['mac']);
     }
 }
 
-if(isset($_GET['ssid_list'])){
+if (isset($_GET['ssid_list'])) {
     $_POST['ssid'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
-    if($_POST['remove_ssid'] == 'true'){
+    if ($_POST['remove_ssid'] == 'true') {
         echo del_ssid($_POST['ssid']);
-    }else{
+    } else {
         echo add_ssid($_POST['ssid']);
     }
 }
@@ -179,7 +289,7 @@ if (isset($_GET['pineap_add_ssid'])) {
     $pineAP = new PineAP();
     if ($pineAP->addSSID(rawurldecode($_GET['pineap_add_ssid']))) {
         echo htmlspecialchars_decode(rawurldecode($_GET['pineap_add_ssid']), ENT_QUOTES);
-    }   
+    }
 }
 
 if (isset($_GET['karma_ssidFilter_del'])) {
@@ -204,7 +314,6 @@ if (isset($_GET['deauth'])) {
 }
 
 if (isset($_GET['pineAP'])) {
-
     $target = $_POST['target'];
     $source = $_POST['source'];
     $b_interval = $_POST['b_interval'];
@@ -219,7 +328,6 @@ if (isset($_GET['pineAP'])) {
 }
 
 if (isset($_GET['pineAP_SSID'])) {
-
     $ssid = $_POST['ssid'];
 
     $pineAP = new PineAP();
@@ -234,89 +342,113 @@ if (isset($_GET['pineAP_SSID'])) {
 
 
 
-function get_log(){
+function get_log()
+{
     $leases = file_get_contents("/tmp/dhcp.leases");
     $arp = file_get_contents("/proc/net/arp");
-    $karma_log = explode("\n", htmlspecialchars(file_get_contents((trim(file_get_contents("/etc/pineapple/karma_log_location"))."karma-phy0.log"))));
 
-    $html = "<pre>";
-    $html .= $leases."\n";
-    $html .= $arp."\n";
-    $html .= "</pre><pre id='karma_log_content'>";
-    foreach(array_reverse($karma_log) as $line){
-        if(strpos($line, 'KARMA') !== FALSE){
-            $html .= htmlspecialchars($line) . "\n";
+    $file = fopen(trim(file_get_contents("/etc/pineapple/karma_log_location")) . "pineap.log", "r");
+
+    while (($line = fgets($file)) !== false) {
+        echo htmlspecialchars($line, ENT_QUOTES);
+        ob_flush();
+        flush();
+    }
+    fclose($file);
+}
+
+function get_client_report()
+{
+    $client_report = array();
+    $client_report['stations'] = array();
+    $client_report['dhcp'] = array();
+    exec("cat /var/dhcp.leases", $client_report['dhcp']);
+    exec("cat /proc/net/arp", $client_report['arp']);
+    exec("iw dev wlan0 station dump | grep -A 1 'Station'", $station_dump);
+
+    $count = 0;
+    $station = "";
+    foreach ($station_dump as $line) {
+        if ($count == 0) {
+            $station = substr($line, 8, 17);
+        } elseif ($count == 1) {
+            $station .= " " . substr($line, 16, 17);
+            array_push($client_report['stations'], $station);
+        }
+        $count += 1;
+        if ($count > 2) {
+            $count = 0;
         }
     }
-    $html .= "</pre>";
 
-    return $html;
+    return json_encode($client_report);
 }
 
-function get_detailed_report(){
-    $logs = array();
-
-    array_push($logs, htmlspecialchars(file_get_contents('/tmp/dhcp.leases')));
-    array_push($logs, htmlspecialchars(file_get_contents('/proc/net/arp')));
-    exec("awk '{\$1=\"\"; \$2=\"\"; \$3=\"\"; \$4=\"\"; print}' $(cat /etc/pineapple/karma_log_location)karma-phy0.log | grep -E 'Successful|association'", $output);
-    $karma = array();
-    foreach($output as $line){
-        array_push($karma, htmlspecialchars(trim($line)));
-    }
-    array_push($logs, $karma);
-    $html = json_encode($logs);
-
-    return $html;
-}
-
-function autostart($mode){
-    if($mode == "enable"){
-        exec("/etc/init.d/karma enable");
-    }else{
-        exec("/etc/init.d/karma disable");
+function autostart($mode)
+{
+    if ($mode == "enable") {
+        exec("/etc/init.d/pineap enable");
+    } else {
+        exec("/etc/init.d/pineap disable");
     }
 }
 
-function change_ssid_mode(){
-    if(exec('hostapd_cli -p /var/run/hostapd-phy0 karma_get_black_white') == 'BLACK'){
+function change_ssid_mode()
+{
+    if (exec('hostapd_cli -p /var/run/hostapd-phy0 karma_get_black_white') == 'BLACK') {
         exec('hostapd_cli -p /var/run/hostapd-phy0 karma_white');
-    }else{
+    } else {
         exec('hostapd_cli -p /var/run/hostapd-phy0 karma_black');
     }
 }
 
-function change_ssid($ssid, $persistence=false){
+function change_mac_mode()
+{
+    if (exec('hostapd_cli -p /var/run/hostapd-phy0 karma_get_mac_black_white') == 'BLACK') {
+        exec('hostapd_cli -p /var/run/hostapd-phy0 karma_mac_white');
+    } else {
+        exec('hostapd_cli -p /var/run/hostapd-phy0 karma_mac_black');
+    }
+}
+
+function change_ssid($ssid, $persistence = false)
+{
     exec("hostapd_cli -p /var/run/hostapd-phy0 karma_change_ssid '".$ssid."'");
-    if($persistence){
+    if ($persistence) {
         exec("uci set wireless.@wifi-iface[0].ssid='".$ssid."'");
         exec("uci commit wireless");
     }
     return "<font color='lime'>SSID changed to '$ssid'.</font>";
 }
 
-function add_ssid($ssid){
+function add_ssid($ssid)
+{
     $ssid = escapeshellarg($ssid);
     exec("pineapple karma add_ssid {$ssid}");
     return "<font color='lime'>SSID added to list.</font>";
 }
 
-function del_ssid($ssid){
+function del_ssid($ssid)
+{
     $ssid = escapeshellarg($ssid);
     exec("pineapple karma del_ssid {$ssid}");
     return "<font color='lime'>SSID removed from list.</font>";
 }
 
-function add_mac($mac){
+function add_mac($mac)
+{
     exec('pineapple karma add_mac "'.$mac.'"');
     return "<font color='lime'>MAC added to list.</font>";
 }
 
-function del_mac($mac){
+function del_mac($mac)
+{
     exec('pineapple karma del_mac "'.$mac.'"');
     return "<font color='lime'>MAC removed from list.</font>";
 }
 
-function get_ssids(){
+function get_ssids()
+{
     exec("pineapple karma list_ssids", $ssid_list);
     echo "<b>List of SSIDs:</b><br />";
     foreach ($ssid_list as $ssid) {
@@ -324,12 +456,11 @@ function get_ssids(){
     }
 }
 
-function get_macs(){
+function get_macs()
+{
     exec("pineapple karma list_macs", $mac_list);
     echo "<b>List of MAC addresses:</b><br />";
     foreach ($mac_list as $mac) {
         echo $mac."<br />";
     }
 }
-
-?>
