@@ -380,6 +380,7 @@ function get_tab(link){
 }
 
 function select_tab_content(tab){
+    $(".tabContainer").scrollTop(0);
     $('#tabs li a').addClass('inactive');
     tab.removeClass('inactive');
     get_tab(tab.attr('id'));

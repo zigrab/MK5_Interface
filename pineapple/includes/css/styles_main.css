@@ -205,7 +205,7 @@
   z-index: 80;
   /*padding: 10px;*/
 
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
   visibility: hidden;
 }
@@ -357,14 +357,12 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  border-radius: 10px;
   padding-right: 10px;
   visibility: visible;
 
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 10px;
   background: green;
   padding-right: 10px;
   visibility: visible;
@@ -416,4 +414,7 @@ body {
 .tabContainer {
     padding: 10px;
     color: white;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height:89%;
 }

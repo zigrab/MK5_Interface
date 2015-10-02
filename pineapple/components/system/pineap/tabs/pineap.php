@@ -12,6 +12,8 @@ function get_pineap_status()
         return true;
     }
 }
+
+touch("/etc/pineapple/ssid_file");
 ?>
 
 <h2>PineAP Configuration</h2>

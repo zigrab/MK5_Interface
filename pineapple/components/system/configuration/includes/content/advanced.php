@@ -2,7 +2,7 @@
 <center><div id='config_message'></div></center>
 <fieldset>
   <legend>Factory Reset and Reboot</legend>
-  <center><a href='#sys/configuration/reset/true/popup'>Factory Reset Pineapple</a>  |  <a href='#sys/configuration/reboot/true/popup'>Reboot Pineapple</a></center>
+  <center><a href='#sys/configuration/reset/true/popup' onclick="return confirm('Are you sure you want to factory reset your WiFi Pineapple MKV?\nYou will loose all data not stored on the SD card.')">Factory Reset Pineapple</a>  |  <a href='#sys/configuration/reboot/true/popup' onclick="return confirm('Are you sure you want to reboot?')">Reboot Pineapple</a></center>
 </fieldset>
 
 <br /><br />

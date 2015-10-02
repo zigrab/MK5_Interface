@@ -254,7 +254,6 @@ class Pineapple
 
             if (!file_exists($this->directory . '/tabs/' . $file)) {
                 touch($this->directory . '/tabs/' . $file);
-                print "Not exists..";
             }
             echo "<li><a id='{$this->rel_dir}/tabs/{$file}' onclick='select_tab_content($(this))'>{$tab_name}</a></li>";
         }

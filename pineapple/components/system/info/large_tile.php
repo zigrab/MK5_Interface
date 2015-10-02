@@ -3,7 +3,7 @@
 global $directory, $rel_dir;
 ?>
 <script type='text/javascript' src='<?=$rel_dir?>includes/helpers.js'></script>
-<style>@import url('<?=$rel_dir?>includes/styles.css')</style>
+<!-- <style>@import url('<?=$rel_dir?>includes/styles.css')</style> -->
 
 <ul id="tabs">
   <li><a id="about">About</a></li>

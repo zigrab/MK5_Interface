@@ -10,11 +10,19 @@ class Overlay
         $this->scanning_iface = $scanning_iface;
     }
 
-    public function getAPs()
+    public function generateAPs()
     {
-        $ap_list = $this->scan();
+        $this->scan();
+        return true;
+    }
 
-        return json_encode($ap_list);
+    public function retreiveAPs()
+    {
+        if (file_exists("/tmp/recon.ap.done")) {
+            return json_encode($this->parseScan());
+        }
+        
+        return 0;
     }
 
     public function generateStations($duration)
@@ -31,7 +39,7 @@ class Overlay
         $mon_interface = exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'");
 
         exec("ifconfig wlan1 down");
-        exec("echo '/pineapple/overlay/station_builder ". $mon_interface . " ". $duration ."' | at now");
+        exec("echo 'pinesniffer ". $mon_interface . " ". $duration ."' | at now");
 
         unlink("/tmp/running.overlay");
     }
@@ -39,19 +47,37 @@ class Overlay
     public function retreiveStations()
     {
         while (true) {
-            if (file_exists("/tmp/stations.overlay")) {
+            if (file_exists("/tmp/recon.stations")) {
                 break;
             }
-            sleep(1.5);
+            usleep(500000);
         }
 
+        $wlan0_mac = trim(exec("ifconfig wlan0 | grep HWaddr | awk '{print $5}'"));
         $stations = array();
-        $stations_csv_array = explode("\n", trim(file_get_contents("/tmp/stations.overlay")));
-        unlink("/tmp/stations.overlay");
+        $stations_csv_array = explode("\n", trim(file_get_contents("/tmp/recon.stations")));
+        unlink("/tmp/recon.stations");
 
         foreach ($stations_csv_array as $station_csv) {
             $station = array();
             $array = explode(",", $station_csv);
+
+            if ($array[0] != "") {
+                if (trim($array[0]) == $wlan0_mac) {
+                    continue;
+                }
+                $station['sta'] = strtolower(trim($array[0]));
+
+                if (trim($array[1]) != "FF:FF:FF:FF:FF:FF") {
+                    $station['bssid'] = strtolower(trim($array[1]));
+                } else {
+                    $station['bssid'] = "";
+                }
+                array_push($stations, $station);
+            }
+            
+            
+
             if ($array[0] != "") {
                 $station['sta'] = strtolower($array[0]);
                 if (trim($array[5]) == "(not associated)") {
@@ -59,7 +85,7 @@ class Overlay
                 } else {
                     $station['bssid'] = strtolower(trim($array[5]));
                 }
-                array_push($stations, $station);
+                
             }
         }
         echo json_encode($stations);
@@ -68,11 +94,25 @@ class Overlay
     private function scan()
     {
         set_time_limit(300);
+
+        unlink("/tmp/recon.ap");
+        unlink("/tmp/recon.ap.done");
+
         $iface = $this->scanning_iface;
         $ap_list = array();
         exec("ifconfig {$iface} up");
-        exec("bash -c 'for i in {1..5}; do iw {$iface} scan; sleep 1; done;'", $scan);
-        $scan = preg_split("/^BSS /m", implode("\n", $scan));
+        exec("echo \"bash -c 'for i in {1..5}; do iw {$iface} scan >> /tmp/recon.ap; sleep 1; done; touch /tmp/recon.ap.done'\" | at now", $scan);
+        return true;
+    }
+
+    private function parseScan()
+    {
+        set_time_limit(300);
+        $ap_list = array();
+
+        $scan = preg_split("/^BSS /m", file_get_contents("/tmp/recon.ap"));
+        unlink("/tmp/recon.ap");
+        unlink("/tmp/recon.ap.done");
         unset($scan[0]);
 
         foreach ($scan as $ap) {

@@ -1,6 +1,6 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <?php
-$directory = realpath(dirname(__FILE__)).'/../../';
+$directory = realpath(dirname(__FILE__)).'/../';
 $rel_dir = str_replace('/pineapple', '', $directory);
 ?>
 

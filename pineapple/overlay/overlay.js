@@ -1,15 +1,26 @@
 window.overlay_data = {}
-window.overlay_data['client_running'] = false;
+window.overlay_data['running'] = false;
 window.overlay_data['auto_scan'] = false;
-window.overlay_data['stop'] = false;
 
 
 function ap_scan()
 {
-    $.get('/overlay/overlay.php?ap_scan', function(data){
+    window.overlay_data['ap_data'] = "";
+    $.get('/overlay/overlay.php?ap_scan');
+    retreive_aps();
+}
+
+function retreive_aps(){
+    $.get('/overlay/overlay.php?retreive_aps', function(data){
         if(data.length){
-            if(window.overlay_data['running']) {
-                window.overlay_data['ap_data'] = JSON.parse(data);
+            if(data == "0") {
+                setTimeout(function(){
+                    retreive_aps();
+                }, 1500);
+            } else {
+                if(window.overlay_data['running']) {
+                    window.overlay_data['ap_data'] = JSON.parse(data);
+                }
             }
         }
     });
@@ -19,6 +30,7 @@ function ap_scan()
 function client_scan(duration)
 {
     var duration = parseInt(duration);
+    window.overlay_data['client_data'] = "";
 
     $.get('/overlay/overlay.php', {generate_stations: duration});
     
@@ -30,7 +42,6 @@ function client_scan(duration)
                     window.overlay_data['client_data'] = JSON.parse(data);
                 }
             }
-            window.overlay_data['client_running'] = false;
         });
 
     }, (duration+5)*1000);
@@ -40,9 +51,7 @@ function client_scan(duration)
 function draw_data(advanced_scan)
 {
 
-    if(window.overlay_data['stop']) {
-        window.overlay_data['stop'] = false;
-        window.overlay_data['running'] = false;
+    if (!window.overlay_data['running']) {
         window.overlay_data['ap_data'] = "";
         window.overlay_data['client_data'] = "";
         return;
@@ -57,8 +66,11 @@ function draw_data(advanced_scan)
         if(ap_data && client_data) {
             draw_ap_data(ap_data);
             draw_client_data(client_data);
-            $(".overlay_message").html("");
-            window.overlay_data['running'] = false;
+            if (!window.overlay_data['auto_scan']) {
+                overlay_stop_scan();
+            } else {
+                window.overlay_data['auto_scan'] = false;
+            }
         } else {
             setTimeout(function(){
                 draw_data(true);
@@ -67,8 +79,11 @@ function draw_data(advanced_scan)
     } else {
         if (ap_data) {
             draw_ap_data(ap_data);
-            $(".overlay_message").html("");
-            window.overlay_data['running'] = false;
+            if (!window.overlay_data['auto_scan']) {
+                overlay_stop_scan();
+            } else {
+                window.overlay_data['auto_scan'] = false;
+            }
         } else {
             setTimeout(function(){
                 draw_data(false);
@@ -137,10 +152,11 @@ function draw_ap_data(ap_list)
 
 
 function initial_scan() {
-    $(".overlay_loading").show();
-    ap_scan();
     window.overlay_data['running'] = true;
-    draw_data(false);
+    $(".overlay_loading").show();
+    setTimeout(function(){
+        overlay_start_scan();
+    }, 500);
 }
 
 function get_least_full_col(){
@@ -152,25 +168,41 @@ function get_least_full_col(){
     return cols.indexOf(Math.min.apply(Math, cols))+1;
 }
 
+
+function overlay_toggle_scan() {
+    if (window.overlay_data['running']) {
+        overlay_stop_scan();
+    } else {
+        overlay_start_scan();
+    }
+}
+
+
 function overlay_start_scan() {
+    $("#overlay_start_stop").text("STOP SCAN");
+    $(".overlay_message").html("<img style='width: 1.0em;' src='/includes/img/throbber.gif'>");
+
+    window.overlay_data['running'] = true;
+
+
     var scan_type = $("[name=scan_type]:checked").val();
     var scan_duration = parseInt($("[name=scan_duration]").val());
     var scan_auto = $("[name=auto_scan]").prop("checked");
-    
+  
+
     if (scan_auto) {
-        window.overlay_data['auto_scan'] = true;
+        window.overlay_data['auto_scan'] = false;
         window.overlay_data['refresh_id'] = setInterval(function(){
-            if (window.overlay_data['auto_scan']) {
-                if (!window.overlay_data['running']) {
+            if (window.overlay_data['running']) {
+                if (!window.overlay_data['auto_scan']) {
+                    window.overlay_data['auto_scan'] = true;
                     overlay_scan(scan_duration, scan_type);
                 }
             } else {
                 clearInterval(window.overlay_data['refresh_id']);
-                window.overlay_data['refresh_id'] = "";
-                window.overlay_data['auto_scan'] = false;
+                window.overlay_data['autoscan'] = false;
             }
         }, 2500, "overlay");
-
     } else {
         overlay_scan(scan_duration, scan_type);
     }
@@ -178,9 +210,6 @@ function overlay_start_scan() {
 
 
 function overlay_scan(duration, type) {
-    $(".overlay_message").html("<img style='width: 1.5em;' src='/includes/img/throbber.gif'><br />Performing Scan");
-    window.overlay_data['running'] = true;
-
     switch(type){
         case "ap_client":
             client_scan(duration);
@@ -202,8 +231,11 @@ function overlay_scan(duration, type) {
 
 function overlay_stop_scan() {
     clearInterval(window.overlay_data['refresh_id']);
-    window.overlay_data['stop'] = true;
+    window.overlay_data['running'] = false;
+
+    $("#overlay_start_stop").text("START SCAN");
     $(".overlay_message").html("");
+    $(".overlay_loading").hide();
 }
 
 function recon_ap_action(ssid) {
