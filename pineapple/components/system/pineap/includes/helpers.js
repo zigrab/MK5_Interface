@@ -1,30 +1,5 @@
-$(document).ready(function () {
-
-  $('#tabs li a:not(:first)').addClass('inactive');
-  selectTabContent($('#tabs li a:first').attr('id'));
-  $('#tabs li a').click(function () {
-    var t = $(this).attr('id');
-    if ($(this).hasClass('inactive')) {
-      $('#tabs li a').addClass('inactive');
-      $(this).removeClass('inactive');
-      selectTabContent(t);
-    }else{
-      selectTabContent(t);
-    }
-  });
-
-});
-
-function selectTabContent(id){
-  $.ajaxSetup({async:false});
-  $.get("/components/system/karma/includes/content/"+id+".php", function(data){
-    $(".tabContainer").html(data);
-  });
-  $.ajaxSetup({async:true});
-}
-
 function karma_reload_config(){
-  selectTabContent('config');
+  get_tab('/components/system/pineap/tabs/config.php');
 }
 
 function karma_handle_form(data){
@@ -36,7 +11,7 @@ function karma_change_log_location(data){
 }
 
 function refresh_log(){
-  $.get('/components/system/karma/functions.php?action=get_log', function(data){
+  $.get('/components/system/pineap/functions.php?action=get_log', function(data){
     $('#karma_log').html(data);
     karma_log = $("#karma_log_content").text().split("\n");
     apply_filters();
@@ -79,7 +54,7 @@ function filter_log(log, filters, remove_duplicates){
 
 function refresh_report(){
 
-  $.get('/components/system/karma/functions.php?action=get_report', function(data){
+  $.get('/components/system/pineap/functions.php?action=get_report', function(data){
 
     data = JSON.parse(data);
     var clients = new Array();
@@ -133,4 +108,20 @@ function refresh_report(){
 
     $('#karma_report').html(html);
   });
+}
+
+
+function save_pineap_settings() {
+  get_tab("/components/system/pineap/tabs/pineap.php");
+  setTimeout(function(){
+    $("#pineap_message").html("<center><span class='success'>Settings Saved.</span></center>");
+  },500);
+}
+
+function save_pineap_settings_wait() {
+  setTimeout(function(){
+    close_popup();
+    pineap_reload_tile();
+    get_tab("/components/system/pineap/tabs/pineap.php");
+  }, 2000);
 }

@@ -3,13 +3,13 @@
 
 <fieldset>
   <legend>Karma Log Filters</legend>
-  <input name="filter_type" id="karma_filter" type="radio" value="Probe Request from"> Probe Requests | <input name="filter_type" id="karma_filter" type="radio" value="association"> Associations | <input name="filter_type" id="karma_filter" type="radio" value="" checked> All | <input name="dupes" id="karma_filter" name="" type="checkbox"> Remove Duplicates | SSID: <input name="ssid_filter" id="karma_filter" type="text"> | MAC: <input name="mac_filter" id="karma_filter" type="text"> | <b><a href="JAVASCRIPT:apply_filters()">APPLY FILTERS</a> | <b><a href="JAVASCRIPT:clear_filters()">CLEAR FILTERS</a></b>
+  <input name="filter_type" id="karma_filter" type="radio" value="Probe Request from"> Probes | <input name="filter_type" id="karma_filter" type="radio" value="association"> Associations | <input name="filter_type" id="karma_filter" type="radio" value="" checked> All | <input name="dupes" id="karma_filter" name="" type="checkbox"> Remove Duplicates | SSID: <input name="ssid_filter" id="karma_filter" type="text"> | MAC: <input name="mac_filter" id="karma_filter" type="text"> | <b><a href="JAVASCRIPT:apply_filters()">APPLY</a> | <b><a href="JAVASCRIPT:clear_filters()">CLEAR</a></b>
 </fieldset>
 
 <br /><br />
 
 <fieldset>
-  <legend>Karma Log - <a href="JAVASCRIPT:refresh_log();">Refresh Log</a> - <a href='#sys/karma/action/clear_log/refresh_log'>Clear Log</a></legend>
+  <legend>Karma Log - <a href="JAVASCRIPT:refresh_log();">Refresh Log</a> - <a href='#sys/pineap/action/clear_log/refresh_log'>Clear Log</a></legend>
   <div id='karma_log'>Loading data, please wait.</div>
 </fieldset>
 

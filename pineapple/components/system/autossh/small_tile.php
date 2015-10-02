@@ -1,20 +1,20 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <?php
 
-echo 'AutoSSH: ';
+echo 'AutoSSH ';
 if(autoSSH_connected()) {
-  echo "<font color=\"lime\"><b>Connected</b></font>.&nbsp;&nbsp;&nbsp; | <a href='#sys/autossh/autossh/stop/refresh_autossh'>Disconnect</a>";
+  echo "<font color=\"lime\">Connected</font>.&nbsp;&nbsp;&nbsp; | <a href='#sys/autossh/autossh/stop/refresh_autossh'>Disconnect</a>";
 } else {
-  echo "<font color=\"red\"><b>Disconnected</b></font>. | <a href='#sys/autossh/autossh/start/refresh_autossh'>Connect</a>";
+  echo "<font color=\"red\">Disconnected</font>. | <a href='#sys/autossh/autossh/start/refresh_autossh'>Connect</a>";
 }
 
 echo "<br />";
 
-echo 'Autostart: ';
+echo 'Autostart ';
 if(autoSSH_autostart()) {
-  echo "<font color=\"red\"><b>Disabled</b></font>.&nbsp;&nbsp; | <a href='#sys/autossh/autossh/enable/refresh_autossh'>Enable</a>";
+  echo "<font color=\"red\">Disabled</font>.&nbsp;&nbsp; | <a href='#sys/autossh/autossh/enable/refresh_autossh'>Enable</a>";
 } else {
-  echo "<font color=\"lime\"><b>Enabled</b></font>.&nbsp;&nbsp;&nbsp; | <a href='#sys/autossh/autossh/disable/refresh_autossh'>Disable</a>";
+  echo "<font color=\"lime\">Enabled</font>.&nbsp;&nbsp;&nbsp; | <a href='#sys/autossh/autossh/disable/refresh_autossh'>Disable</a>";
 }
 
 

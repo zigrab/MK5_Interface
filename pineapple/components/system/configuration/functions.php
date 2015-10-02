@@ -100,7 +100,7 @@ function change_port($port){
   if(!is_numeric($port) || trim($port) == ''){
     $port = '1471';
   }
-  exec("sed -i 's/".explode_n(':', exec("cat /etc/config/uhttpd | grep -i listen_http | grep -v listen_https | tail -n 1"), 1)."/".$port."/g' /etc/config/uhttpd");
+  exec("sed -i 's/".explode(':', exec("cat /etc/config/uhttpd | grep -i listen_http | grep -v listen_https | tail -n 1"))[1]."/".$port."/g' /etc/config/uhttpd");
   return '<font color="lime">Port changed to '.$port.'.</font>';
 }
 

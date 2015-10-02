@@ -3,9 +3,9 @@
 #    User Variables     #
 #   Please edit these   #
 #########################
-$name = 'Karma';  #Name of tile
+$name = 'PineAP';  #Name of tile
 $updatable = 'false';  #Should this tile auto-refresh
-$version = '2.0';
+$version = '1.0';
 
 
 #########################

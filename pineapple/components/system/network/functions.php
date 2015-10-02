@@ -49,7 +49,7 @@ if(isset($_GET['ap_config'])){
 
 if(isset($_GET['restart_wireless'])){
   echo "<center><font color='lime'>The WiFi Pineapple's wireless is currently restarting.</font><br /><br />
-  If you are connected via the wireless connection, you will may need to re-connect.<br /><br />
+  If you are connected via the wireless connection, you may need to re-connect.<br /><br />
   If you have set a password and are connected wirelessly, you will have to supply the wireless password in your device's network manager.
 </center>";
 exec("echo wifi | at now");
@@ -215,7 +215,7 @@ if(isset($_GET['scan'])){
     foreach ($ap as $line) {
       $line = trim($line);
       if(strpos($line, "SSID:") >= -1){
-        $station_list[$address]['ESSID'] = substr($line, 6);
+        $station_list[$address]['ESSID'] = htmlspecialchars(substr($line, 6));
       }elseif(strpos($line, "DS Parameter set:") >= -1){
         $station_list[$address]['channel'] = substr($line, 26);
         if($station_list[$address]['channel'] == trim(exec("iw dev wlan0 info | grep channel | awk '{print \$2}'"))){
@@ -261,7 +261,7 @@ if(isset($_GET['connect'])){
 
   $ap = json_decode($_GET['connect']);
 
-  $ap->ESSID = base64_decode(rawurldecode($ap->ESSID));
+  $ap->ESSID = htmlspecialchars_decode(base64_decode(rawurldecode($ap->ESSID)));
   $ap->ESSID = str_replace("'", "'\"'\"'", $ap->ESSID);
   $ssid = $ap->ESSID;
 
@@ -342,7 +342,7 @@ if(isset($_GET['get_connection'])){
     exec("ifconfig $iface && iwconfig $iface", $info);
     echo "<pre>";
     foreach($info as $line){
-      echo $line."\n";
+      echo htmlspecialchars($line)."\n";
     }
     echo "</pre>";
   }else{
