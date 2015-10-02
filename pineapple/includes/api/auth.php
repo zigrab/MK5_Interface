@@ -8,7 +8,7 @@ function check_login()
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    if (isset($_GET['logout'])) {
+    if (isset($_GET['logout']) && isset($_GET['logged_in'])) {
         unset($_SESSION['logged_in']);
         exec("rm /tmp/sess_*");
         header("Location: /");
