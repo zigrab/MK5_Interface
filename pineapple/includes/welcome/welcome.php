@@ -60,8 +60,15 @@ if(!(isset($_GET['password']) || isset($_GET['finish']))){
 Welcome to your WiFi Pineapple.
 Find support, infusions, news and forums at <a href="http://wifipineapple.com" target="_blank">WiFiPineapple.com</a>.
 
+<?php
+  if(file_exists('/etc/pineapple/init')){ ?>
+Please refresh this page once you see the blinking LED pattern on your pineapple.
+</pre>
+  <?php }else { ?>
 <a href="?password"><h2>Continue</h2></a>
 </pre>
+<?php } ?>
+
 
 <?php }
 

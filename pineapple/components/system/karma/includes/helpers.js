@@ -56,8 +56,8 @@ function refresh_report(){
         client[0] = karma[i].split(' ')[5];
         client[1] = karma[i-1].slice(71);
         var exists = false;
-        for (var i = clients.length - 1; i >= 0; i--) {
-          if(clients[i][0] == client[0]){
+        for (var j = clients.length - 1; j >= 0; j--) {
+          if(clients[j][0] == client[0]){
             exists = true;
           }
         }

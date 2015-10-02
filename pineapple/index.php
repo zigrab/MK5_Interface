@@ -4,7 +4,7 @@
 
 if(file_exists('/pineapple/includes/welcome/')){include('/pineapple/includes/welcome/welcome.php'); exit(0);}
 
-include_once('/pineapple/includes/api/auth.php');
+//include_once('/pineapple/includes/api/auth.php');
 if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use this UI.";die();}
 ?>
 <html>
@@ -37,7 +37,7 @@ if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use this U
 
 <?php
 
-if(!function_exists("check_login")){
+/*if(!function_exists("check_login")){
   function check_login(){
     if (session_status() == PHP_SESSION_NONE) {
       session_start();
@@ -47,6 +47,6 @@ if(!function_exists("check_login")){
       exit();
     }
   }
-}
+}*/
 
 ?>

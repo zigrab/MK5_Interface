@@ -17,3 +17,21 @@ $rel_dir = str_replace('/pineapple', '', $directory);
     <input type="submit" value="Follow this log">
   </fieldset>
 </form>
+
+
+<fieldset>
+  <legend>Custom Log</legend>
+  <?php
+  if(file_get_contents($directory.'custom') != ''){
+    $file = file_get_contents('/pineapple/components/system/logs/custom');
+    exec('cat '.$file, $tail);
+    echo "<pre>";
+    foreach ($tail as $line) {
+      echo $line."<br />";
+    }
+    echo "</pre>";
+  }else{
+    echo "Not following any log.";
+  }
+  ?>
+</fieldset>

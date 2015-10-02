@@ -1,6 +1,6 @@
 <?php
 //Check if logged in
-include_once('/pineapple/includes/api/auth.php');
+//include_once('/pineapple/includes/api/auth.php');
 include('/pineapple/includes/json.php');
 $json = new Services_JSON();
 /*

@@ -196,6 +196,7 @@ function close_popup(){
 $.fn.AJAXifyForm = function(funct){
   this.each(function(i,el){
     var formData = new FormData();
+    var checkbox_array = new Array();
 
     $("input,select,textarea",el).each(function(i,formEl){
       if(formEl.type == "file"){
@@ -203,11 +204,27 @@ $.fn.AJAXifyForm = function(funct){
           formData.append(formEl.name,formEl.files[x]);
         }
       }
-      else
-      {
+      else if(formEl.type == "checkbox"){
+        if(typeof checkbox_array[formEl.name] === "undefined"){
+          if(formEl.checked){
+            checkbox_array[formEl.name] = new Array();
+            checkbox_array[formEl.name].push(formEl.value);
+          }
+        }else{
+          if(formEl.checked){
+            checkbox_array[formEl.name].push(formEl.value);
+          }
+        }
+      }else{
         formData.append(formEl.name, formEl.value);
       }
     });
+
+    if(Object.keys(checkbox_array).length != 0){
+      for (var key in checkbox_array) {
+        formData.append(key,checkbox_array[key]);
+      }
+    }
 
     $.ajax({
       url: el.action,
@@ -219,7 +236,8 @@ $.fn.AJAXifyForm = function(funct){
       type: el.method,
       success: funct
     });
+
   });
 
-  return this;
+return this;
 }

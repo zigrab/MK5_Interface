@@ -1,3 +1,4 @@
+<?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <script type='text/javascript' src='<?=$rel_dir?>includes/helpers.js'></script>
 <style>@import url('<?=$rel_dir?>includes/styles.css')</style>
 

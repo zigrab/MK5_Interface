@@ -51,6 +51,15 @@ if(isset($_GET['disable'])){
   }
 }
 
+if(isset($_GET['update_route'])){
+
+  $route = $_POST['route'];
+  exec("route del default");
+  exec("route add default gw ".$route);
+  exec("/etc/init.d/firewall restart");
+  echo "<font color='lime'>Route changed successfully.</font>";
+}
+
 function updateMobile($ifname, 
   $proto, 
   $service, 
@@ -144,16 +153,18 @@ if(isset($_GET['connect'])){
 
 
   $ssid = $ap->ESSID;
+  $channel = $ap->channel;
   exec("ifconfig wlan1 down");
   exec("uci set wireless.@wifi-iface[1].mode=sta");
   exec("uci set wireless.@wifi-iface[1].network=wan");
   exec("uci set wireless.@wifi-iface[1].ssid=\"".$ssid."\"");
+  exec("uci set wireless.@wifi-device[1].channel=\"".$channel."\"");
 
   if($ap->security == null){
     exec("uci delete wireless.@wifi-iface[1].key");
     exec("uci delete wireless.@wifi-iface[1].encryption");
 
-  }elseif($ap->security->WPA2 != null && $ap->security->WPA2 != null){
+  }elseif($ap->security->WPA != null && $ap->security->WPA2 != null){
     $mode = "mixed-psk";
     $cipher = "";
     if($ap->security->WPA2->ccmp != null){
@@ -162,7 +173,7 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA2->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key=".$ap->key);
+    exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
     exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
   }elseif($ap->security->WPA2 != null){
     $mode = "psk2";
@@ -173,7 +184,7 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA2->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key=".$ap->key);
+    exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
     exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
   }elseif($ap->security->WPA != null) {
     $mode = "psk";
@@ -184,10 +195,10 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key=".$ap->key);
+    exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
     exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
   }elseif($ap->security->WEP){
-   exec("uci set wireless.@wifi-iface[1].key=".$ap->key);
+   exec("uci set wireless.@wifi-iface[1].key=\"".$ap->key."\"");
    exec("uci set wireless.@wifi-iface[1].encryption=wep");
  }
  exec("uci commit wireless");
@@ -209,4 +220,13 @@ if(isset($_GET['get_connection'])){
   }else{
     echo "not_associated";
   }
+}
+
+if(isset($_GET['disconnect'])){
+  exec("uci delete wireless.@wifi-iface[1].key");
+  exec("uci delete wireless.@wifi-iface[1].encryption");
+  exec("uci set wireless.@wifi-iface[1].mode=ap");   
+  exec("uci commit wireless");
+  exec("wifi");
+  exec("ifconfig wlan1 down");
 }

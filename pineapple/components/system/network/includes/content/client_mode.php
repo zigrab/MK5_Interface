@@ -10,7 +10,7 @@
 <br /><br />
 
 <fieldset>
-  <legend>Connection Information</legend>
+  <legend>Connection Information - <a href="JAVASCRIPT:disconnect()">Disconnect</a></legend>
   <p>
     <div id="connection_information">Checking Connection..</div>
   </p>
@@ -84,6 +84,14 @@
         $("#network_message").html("<font color='lime'>Connection initiated. See below for connection details.</font><br /><br />")
       }
     });
+  }
+
+  function disconnect(){
+    $("#network_message").html("<img src='/includes/img/throbber.gif'><br /><font color='lime'>Disconnecting, please wait.</font><br /><br />")
+
+    $.get('/components/system/network/functions.php?disconnect', function(data){
+      $("#network_message").html("<font color='lime'>Disconnected.</font><br /><br />")
+    });    
   }
 
   function check_connection(){

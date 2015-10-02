@@ -1,3 +1,4 @@
+<?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <?php
 
 echo 'AutoSSH: ';

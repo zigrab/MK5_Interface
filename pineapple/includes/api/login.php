@@ -45,7 +45,7 @@ if(isset($_POST['login'])){
         <noscript><meta http-equiv="refresh" content="0;url=index.php?noJS" /></noscript>
 </head>
 
-<body>
+<body style="background-color:black; color: white;">
   <center>
 <div style="background-color: black; position: absolute; margin: auto; top: 50%; left: 50%; width: 256px; height: 356; margin-left: -128px; margin-top: -178px;">
     <img src="/includes/img/mk5_logo.gif"><br /><br />

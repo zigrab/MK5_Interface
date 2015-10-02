@@ -4,7 +4,7 @@
 
 <ul id="tabs">
   <li><a id="info">Network Info</a></li>
-  <li><a id="mobile">Mobile Broadband</a></li>
   <li><a id="client_mode">Client Mode</a></li>
+  <li><a id="mobile">Mobile Broadband</a></li>
 </ul>
 <div class="tabContainer" />

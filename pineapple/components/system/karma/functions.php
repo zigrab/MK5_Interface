@@ -98,7 +98,8 @@ function change_ssid_mode(){
 function change_ssid($ssid, $persistence=false){
 	exec('hostapd_cli -p /var/run/hostapd-phy0 karma_change_ssid "'.$ssid.'"');
 	if($persistence){
-		exec("echo \"$(sed 's/option ssid.*/option ssid \"".$ssid."\"/g' /etc/config/wireless)\" > /etc/config/wireless");
+		exec("uci set wireless.@wifi-iface[0].ssid=\"".$ssid."\"");
+		exec("uci commit wireless");
 	}
 	return "<font color='lime'>SSID changed to '$ssid'.</font>";
 }
