@@ -6,8 +6,10 @@
     Interface: <select name="iface">
       <?php 
       exec("iwconfig 2>&1 | grep 'IEE' | awk '{print $1}'", $interfaces);
-      foreach($interfaces as $interface){
-        if($interface != "wlan0" && $interface != "mon0") echo "<option value='".substr($interface, -1)."'>$interface</option>";
+      foreach ($interfaces as $interface) {
+        if ($interface != "wlan0" && $interface != "mon0") {
+          echo "<option value='".substr($interface, -1)."'>$interface</option>";
+        }
       }
       ?>
     </select> <a href="JAVASCRIPT:load_ssid()">Scan</a>
@@ -22,8 +24,8 @@
   <legend>Connection Information - <a href="JAVASCRIPT:check_connection()">Refresh</a> - <a href="JAVASCRIPT:disconnect()">Disconnect Selected Interface</a></legend>
     Interface: <select name="connected_iface">
       <?php 
-      foreach($interfaces as $interface){
-        if($interface != "wlan0" && $interface != "mon0") echo "<option value='".substr($interface, -1)."'>$interface</option>";
+      foreach ($interfaces as $interface) {
+        if ($interface != "wlan0" && $interface != "mon0") echo "<option value='".substr($interface, -1)."'>$interface</option>";
       }
       ?>
     </select>  

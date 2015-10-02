@@ -76,7 +76,8 @@ if(isset($_GET['download'])){
 }
 if(isset($_GET['get_small_updates'])){
   if(online()){
-    $infusions = json_decode(file_get_contents("http://wifipineapple.com/?downloads&list_infusions&mk5"));
+    $context = stream_context_create(["ssl" => ["verify_peer" => true, "cafile" => "/etc/ssl/certs/cacert.pem"]]);
+    $infusions = json_decode(file_get_contents("https://wifipineapple.com/?downloads&list_infusions&mk5", false, $context));
     $infusions_updatable = array();
     foreach($infusions->sys as $infusion){
       if(file_exists('/pineapple/components/system/'.$infusion->name)){
@@ -155,7 +156,8 @@ function get_infusion_version($name){
 
 function getInfusionList(){
   if(online()){
-    $infusions = json_decode(file_get_contents("http://wifipineapple.com/?downloads&list_infusions&mk5"));
+    $context = stream_context_create(["ssl" => ["verify_peer" => true, "cafile" => "/etc/ssl/certs/cacert.pem"]]);
+    $infusions = json_decode(file_get_contents("https://wifipineapple.com/?downloads&list_infusions&mk5", false, $context));
     $html .= "
     <fieldset>
       <legend>System Infusions</legend>";
