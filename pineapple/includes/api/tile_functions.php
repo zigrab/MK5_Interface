@@ -11,8 +11,9 @@ $json = new Services_JSON();
 */
 
 function online(){
-  $connection = @file_get_contents("http://wifipineapple.com/ip.php");
-  if(trim($connection) != ""){
+  $connection = @fsockopen("wifipineapple.com", 80);
+  if($connection){
+    fclose($connection);
     return true;
   }
   return false;
@@ -109,9 +110,8 @@ function change_password($current_pass, $new_pass){
     file_put_contents("/etc/shadow", $shadow_file);
 
     return true;
-  }else{
-    return false;
   }
+  return false;
 }
 
 ?>

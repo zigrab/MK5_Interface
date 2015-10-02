@@ -2,6 +2,50 @@
 
 include('/pineapple/includes/api/tile_functions.php');
 
+if(isset($_GET['ap_config'])){
+  $SSID = $_POST['SSID'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
+  $channel = $_POST['channel'];
+  $key = str_replace("'", '\'"\'"\'', $_POST['password']);
+
+  switch ($_POST['encryption']) {
+    case 'WPA':
+    $encryption = "psk+ccmp";
+    break;
+    case 'WPA2':
+    $encryption = "psk2+ccmp";
+    break;
+    default:
+    $encryption = "none";
+    break;
+  }
+  
+  if($encryption != "none" && strlen($key) < 8){
+    echo "<center><font color='red'>Your password must be at least 8 characters long.</font></center>";
+    exit();
+  }
+
+  exec("uci set wireless.@wifi-iface[0].mode='ap'");
+  exec("uci set wireless.@wifi-iface[0].ssid='".$SSID."'");
+  exec("uci set wireless.@wifi-iface[0].key='".$key."'");
+  exec("uci set wireless.@wifi-iface[0].encryption='".$encryption."'");
+  exec("uci set wireless.radio0.channel='".$channel."'");
+  exec("uci commit wireless");
+
+  echo "<center><font color='lime'>AP Configuration changed successfully.</font><br /><br />
+  For these changes to take effect, you will need to restart the WiFi Pineapple's WiFI. 
+  This will disconnect all clients connected wirelessly for a few seconds.<br /><br />
+  <a href='#sys/network/restart_wireless/true/popup'>Restart Wireless</a></center><br /><br /><br />
+  <small>Note: If you turned on encryption and set a password, <b>karma will not work properly</b>. While it does respond to probe requests, it requires a password to join.</small>";
+}
+
+if(isset($_GET['restart_wireless'])){
+  echo "<center><font color='lime'>The WiFi Pineapple's wireless is currently restarting.</font><br /><br />
+  If you are connected via the wireless connection, you will may need to re-connect.<br /><br />
+  If you have set a password and are connected wirelessly, you will have to supply the wireless password in your device's network manager.
+</center>";
+exec("echo wifi | at now");
+}
+
 if(isset($_GET['mobile_config'])){
 
   foreach($_POST as $key => $value){
@@ -110,55 +154,68 @@ if(isset($_GET['restart_dns'])){
 
 if(isset($_GET['scan'])){
 
-  $station_list = array();
-  $scan = explode("\n", shell_exec("ifconfig wlan1 up && iwlist wlan1 scan"));
+  $iface = (is_numeric($_GET['scan'])) ? "wlan".$_GET['scan'] : "wlan1";
 
-  foreach($scan as $line){
-    $line = trim($line);
-    if(substr($line, 0, 4) == "Cell"){
-      $address = substr($line, strpos($line, ":")+2);
-      $station_list[$address] = array();
-    }else if(strpos($line, "ESSID:") !== false){
-      $ESSID = substr(substr($line, 7), 0, -1);
-      $station_list[$address]["ESSID"] = $ESSID;
-    }else if(strpos($line, "Encryption key:") !== false){
-      if(strpos($line, ":on") !== false){
-        $station_list[$address]['security'] = array();
+  $station_list = array();
+  exec("ifconfig $iface up");
+  exec("iw $iface scan", $scan);
+  $scan = preg_split("/^BSS /m", implode("\n", $scan));
+  unset($scan[0]);
+
+  foreach($scan as $ap){
+    $ap = explode("\n", $ap);
+    $address = substr($ap[0], 0, 17);
+    $station_list[$address] = array();
+    foreach ($ap as $line) {
+      $line = trim($line);
+      if(strpos($line, "SSID:") >= -1){
+        $station_list[$address]['ESSID'] = substr($line, 6);
+      }elseif(strpos($line, "DS Parameter set:") >= -1){
+        $station_list[$address]['channel'] = substr($line, 26);
+        if($station_list[$address]['channel'] == trim(exec("iw dev wlan0 info | grep channel | awk '{print \$2}'"))){
+          $station_list[$address]['channel_collision'] = true;
+        }
+      }elseif(strpos($line, "signal:") >= -1){
+        $station_list[$address]['signal'] = substr($line, 8);
+        $quality = 2*(substr($line, 8, -4)+100);
+        if($quality >= 100) $quality = 100;
+        if($quality <= 0) $quality = 0;
+        $station_list[$address]['quality'] = $quality."%";
+      }elseif(strpos($line, "Privacy") >= -1){
+        if(!is_array($station_list[$address]['security'])){
+          $station_list[$address]['security'] = array();
+        }
         $station_list[$address]['security']['WEP'] = true;
+      }elseif(strpos($line, "RSN:") >= -1){
+        unset($station_list[$address]['security']['WEP']);
+        $security = "WPA2";
+        $station_list[$address]['security'][$security] = array();
+      }elseif(strpos($line, "WPA:") >= -1){
+        unset($station_list[$address]['security']['WEP']);
+        $security = "WPA";
+        $station_list[$address]['security'][$security] = array();
+      }elseif(strpos($line, "Pairwise ciphers") >= -1){
+        if(strpos($line, "CCMP") !== false){
+          $station_list[$address]['security'][$security]["ccmp"] = true;
+        }
+        if(strpos($line, "TKIP") !== false){
+          $station_list[$address]['security'][$security]["tkip"] = true;
+        }
       }
-    }else if(strpos($line, "802.11i/WPA2")!== false){ // check for WPA2
-      unset($station_list[$address]['security']['WEP']);
-      $security = "WPA2";
-      $station_list[$address]['security'][$security] = array();
-    }else if(strpos($line, "IE: WPA") !== false){ // check for WPA
-      unset($station_list[$address]['security']['WEP']);
-      $security = "WPA";
-      $station_list[$address]['security'][$security] = array();
-    }else if(strpos($line, "Pairwise Ciphers") !== false){ //CHECK FOR ENCRYPTION TYPES
-      if(strpos($line, "CCMP") !== false){
-        $station_list[$address]['security'][$security]["ccmp"] = true;
-      }
-      if(strpos($line, "TKIP") !== false){
-        $station_list[$address]['security'][$security]["tkip"] = true;
-      }
-    }else if(strpos(substr($line, 0, 8), "Channel") !== false){
-      $station_list[$address]['channel'] = substr($line, 8);
-    }else if(strpos($line, "Quality") !== false){
-      $station_list[$address]['quality'] = str_replace("/", " of ", substr($line, 8, 5));
-      $station_list[$address]['signal'] = substr($line, 28);
     }
   }
-
   echo json_encode($station_list);
 }
 
 if(isset($_GET['connect'])){
+
   set_time_limit(60*10);
+
+  $iface = (is_numeric($_GET['iface'])) ? $_GET['iface'] : "1";
 
   $ap = json_decode($_GET['connect']);
 
   $ap->ESSID = base64_decode(rawurldecode($ap->ESSID));
-  //$ap->ESSID = str_replace("\\", "\\\\", $ap->ESSID);
   $ap->ESSID = str_replace("'", "'\"'\"'", $ap->ESSID);
   $ssid = $ap->ESSID;
 
@@ -166,19 +223,28 @@ if(isset($_GET['connect'])){
 
   if($ap->key != null){
     $ap->key = base64_decode(rawurldecode($ap->key));
-    //$ap->key = str_replace("\\", "\\\\", $ap->key);
     $ap->key = str_replace("'", "'\"'\"'", $ap->key);
   }
 
-  exec("ifconfig wlan1 down");
-  exec("uci set wireless.@wifi-iface[1].mode=sta");
-  exec("uci set wireless.@wifi-iface[1].network=wan");
-  exec("uci set wireless.@wifi-iface[1].ssid='".$ssid."'");
-  exec("uci set wireless.@wifi-device[1].channel=\"".$channel."\"");
+  exec("wifi detect >> /etc/config/wireless");
+  exec("ifconfig wlan".$iface." down");
+
+  $counter = 0;
+  while(true){
+    $entry=trim(exec("uci get wireless.@wifi-iface[".$counter."].network 2>&1"));
+    if($entry == "uci: Entry not found") break;
+    if($entry == "wan") exec("uci set wireless.@wifi-iface[".$counter."].network='lan'");
+    $counter++;
+  }
+  
+  exec("uci set wireless.@wifi-iface[".$iface."].network=wan");
+  exec("uci set wireless.@wifi-iface[".$iface."].mode=sta");
+  exec("uci set wireless.@wifi-iface[".$iface."].ssid='".$ssid."'");
+  exec("uci set wireless.@wifi-device[".$iface."].channel=\"".$channel."\"");
 
   if($ap->security == null){
-    exec("uci delete wireless.@wifi-iface[1].key");
-    exec("uci delete wireless.@wifi-iface[1].encryption");
+    exec("uci delete wireless.@wifi-iface[".$iface."].key");
+    exec("uci delete wireless.@wifi-iface[".$iface."].encryption");
 
   }elseif($ap->security->WPA != null && $ap->security->WPA2 != null){
     $mode = "mixed-psk";
@@ -189,8 +255,8 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA2->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
-    exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
+    exec("uci set wireless.@wifi-iface[".$iface."].key='".$ap->key."'");
+    exec("uci set wireless.@wifi-iface[".$iface."].encryption=".$mode.$cipher);
   }elseif($ap->security->WPA2 != null){
     $mode = "psk2";
     $cipher = "";
@@ -200,8 +266,8 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA2->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
-    exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
+    exec("uci set wireless.@wifi-iface[".$iface."].key='".$ap->key."'");
+    exec("uci set wireless.@wifi-iface[".$iface."].encryption=".$mode.$cipher);
   }elseif($ap->security->WPA != null) {
     $mode = "psk";
     $cipher = "";
@@ -211,11 +277,11 @@ if(isset($_GET['connect'])){
     if($ap->security->WPA->tkip != null){
       $cipher .= "+tkip";
     }
-    exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
-    exec("uci set wireless.@wifi-iface[1].encryption=".$mode.$cipher);
+    exec("uci set wireless.@wifi-iface[".$iface."].key='".$ap->key."'");
+    exec("uci set wireless.@wifi-iface[".$iface."].encryption=".$mode.$cipher);
   }elseif($ap->security->WEP){
-   exec("uci set wireless.@wifi-iface[1].key='".$ap->key."'");
-   exec("uci set wireless.@wifi-iface[1].encryption=wep");
+   exec("uci set wireless.@wifi-iface[".$iface."].key='".$ap->key."'");
+   exec("uci set wireless.@wifi-iface[".$iface."].encryption=wep");
  }
  exec("uci commit wireless");
  exec("wifi");
@@ -225,9 +291,9 @@ if(isset($_GET['connect'])){
 
 
 if(isset($_GET['get_connection'])){
-
-  if(exec("iwconfig wlan1 | grep -ic 'Not-Associated'") == 0){
-    exec("ifconfig wlan1 && iwconfig wlan1", $info);
+  $iface = (is_numeric($_GET['get_connection'])) ? "wlan".$_GET['get_connection'] : "wlan1";
+  if(exec("iwconfig $iface | grep -ic 'Not-Associated'") == 0){
+    exec("ifconfig $iface && iwconfig $iface", $info);
     echo "<pre>";
     foreach($info as $line){
       echo $line."\n";
@@ -239,10 +305,53 @@ if(isset($_GET['get_connection'])){
 }
 
 if(isset($_GET['disconnect'])){
-  exec("uci delete wireless.@wifi-iface[1].key");
-  exec("uci delete wireless.@wifi-iface[1].encryption");
-  exec("uci set wireless.@wifi-iface[1].mode=ap");   
+  $iface = (is_numeric($_GET['disconnect'])) ? $_GET['disconnect'] : "1";
+  exec("uci delete wireless.@wifi-iface[$iface].key");
+  exec("uci delete wireless.@wifi-iface[$iface].encryption");
+  exec("uci delete wireless.@wifi-iface[$iface].ssid");
+  exec("uci set wireless.@wifi-iface[$iface].mode=sta");
   exec("uci commit wireless");
   exec("wifi");
-  exec("ifconfig wlan1 down");
+  exec("ifconfig wlan"+$iface+" down");
+}
+
+function generate_mac(){
+  $octet_array = array();
+  for($i=0; $i < 5; $i++){
+    $octet = dechex(rand(0, 255));
+    if(strlen($octet) < 2) $octet = "0".$octet;
+    array_push($octet_array, $octet);
+  }
+  return "00:".implode(":", $octet_array);
+}
+
+function set_mac($interface, $mac=null){
+  if(!is_numeric($interface)) return;
+  if($mac === null) $mac = generate_mac();
+  exec("uci set wireless.@wifi-iface[".$interface."].macaddr=".$mac.";uci commit wireless;wifi");
+  return $mac;
+}
+
+if(isset($_GET['change_mac'])){
+  $interface = $_GET['change_mac'];
+  if(isset($_GET['mac'])){
+    echo set_mac($interface, $_GET['mac']);
+  }else{
+    echo set_mac($interface);
+  }
+}
+
+if(isset($_GET['get_mac'])){
+  if(!is_numeric($_GET['get_mac'])) return;
+  echo exec("ifconfig wlan".$_GET['get_mac']." | grep HWaddr | awk '{print \$5}'");
+}
+
+if(isset($_GET['restore_mac'])){
+  if(!is_numeric($_GET['restore_mac'])) return;
+  echo set_mac($_GET['restore_mac'], "");
+}
+
+if(isset($_GET['reset_config'])){
+  echo "<center>The Wireless Configuration has been reset.<br /><br />The WiFi Pineapple is now restarting it's wireless interfaces for all changes to take effect.</center>";
+  exec("echo 'wifi detect > /etc/config/wireless && wifi' | at now");
 }

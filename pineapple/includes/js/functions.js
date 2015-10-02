@@ -332,18 +332,58 @@ $.fn.AJAXifyForm = function(funct){
       }
     }
 
-    $.ajax({
-      url: el.action,
-      data: formData,
-      cache: false,
-      contentType: false,
-      processData: false,
-      async: false,
-      type: el.method,
-      success: funct
-    });
+    function ajaxify(url, data, type, success){
+      $.ajax({
+        statusCode: {
+          502: function() {
+            setTimeout(function () {
+              ajaxify(url, data, type, success);
+            }, 750);
+          }
+        },
+        url: url,
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        async: false,
+        type: type,
+        success: funct
+      });
+    }
+
+    ajaxify(el.action, formData, el.method, funct);
 
   });
 
 return this;
 }
+
+
+/*
+Function overriding jQuery's GET function. Handles 502 automatically.
+*/
+$.get=function ( url, data, callback, type ) {
+
+if ( jQuery.isFunction( data ) ) {
+  type = type || callback;
+  callback = data;
+  data = undefined;
+}
+
+return jQuery.ajax({
+  statusCode: {
+    502: function() {
+      setTimeout(function () {
+        $.get(url, data, callback, type);
+      }, 750);
+    }
+  },
+  url: url,
+  type: 'GET',
+  dataType: type,
+  data: data,
+  success: callback,
+});
+}
+

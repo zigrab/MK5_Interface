@@ -38,6 +38,7 @@
   overflow-y: auto;
   height: 100%;
   text-align: center;
+  min-height: 250px;
 }
 
 .tiles_wrapper_seperator {
@@ -117,6 +118,7 @@
   border: 3px solid green;
   width: 93.25%;
   height: 85%;
+  z-index: 99;
   /*padding: 10px;*/
 
   overflow-y: auto;
@@ -185,7 +187,7 @@
   border: solid 2px green;
   background-color: black;
   padding: 1em; 
-  z-index: 99;
+  z-index: 100;
 }
 
 .entropy {

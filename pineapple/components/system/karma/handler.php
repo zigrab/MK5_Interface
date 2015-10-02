@@ -5,7 +5,7 @@
 #########################
 $name = 'Karma';  #Name of tile
 $updatable = 'false';  #Should this tile auto-refresh
-$version = '1.7';
+$version = '2.0';
 
 
 #########################

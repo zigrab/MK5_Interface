@@ -20,7 +20,7 @@ if(isset($_GET['action'])){
 		echo get_log();
 		break;
 		case 'clear_log':
-		exec("echo '' > /tmp/karma-phy0.log");
+		exec("echo '' > $(cat /etc/pineapple/karma_log_location)karma-phy0.log");
 		break;
 		case 'get_report':
 		echo get_detailed_report();
@@ -77,6 +77,7 @@ function get_log(){
 	$html = "<pre>";
 	$html .= $leases."\n";
 	$html .= $arp."\n";
+	$html .= "</pre><pre id='karma_log_content'>";
 	foreach(array_reverse($karma_log) as $line){
 		if(strpos($line, 'KARMA') !== FALSE){
 			$html .= $line;
@@ -92,10 +93,10 @@ function get_detailed_report(){
 
 	array_push($logs, htmlspecialchars(file_get_contents('/tmp/dhcp.leases')));
 	array_push($logs, htmlspecialchars(file_get_contents('/proc/net/arp')));
-	exec("cut -d ' ' -f 6- $(cat /etc/pineapple/karma_log_location)karma-phy0.log | grep -E 'Successful|association'", $output);
+	exec("awk '{\$1=\"\"; \$2=\"\"; \$3=\"\"; \$4=\"\"; print}' $(cat /etc/pineapple/karma_log_location)karma-phy0.log | grep -E 'Successful|association'", $output);
 	$karma = array();
 	foreach($output as $line){
-		array_push($karma, htmlspecialchars($line));
+		array_push($karma, htmlspecialchars(trim($line)));
 	}
 	array_push($logs, $karma);
 	$html = json_encode($logs);

@@ -1,20 +1,11 @@
 <?php
 
-// ini_set('display_errors',1);
-
 if(file_exists('/pineapple/includes/welcome/')){include('/pineapple/includes/welcome/welcome.php'); exit(0);}
-
-if(isset($_GET['fix_wifi'])){
-  set_time_limit(300);
-  exec("wifi detect > /etc/config/wireless");
-  exec("uci commit wireless");
-  exec("wifi");
-  exit();
-}
 
 if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use the webinterface.";die();}
 ?>
 <html>
+
 
 <head>
 	<title>WiFi Pineapple - Management</title>
@@ -39,11 +30,9 @@ if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use the we
   </div>
   <div class="tiles"><div class="tiles_wrapper"><div class="tile_expanded"></div></div></div>
   
-  <!-- Funky bar test -->
   <div class="hidden_bar">
   </div>
 </body>
-
 
 
 </html>
