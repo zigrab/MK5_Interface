@@ -26,11 +26,17 @@ if (isset($_GET['action'])) {
 function get_status_bar()
 {
     $status_bar = array();
-    array_push($status_bar, exec('date +"%T"'));
+    array_push($status_bar, get_num_clients());
     array_push($status_bar, get_notifications());
     echo json_encode($status_bar);
 }
 
+function get_num_clients()
+{
+    $wlan0_clients = exec('iw dev wlan0 station dump | grep Station | wc -l');
+    $wlan01_clients = exec('iw dev wlan0-1 station dump | grep Station | wc -l');
+    return $wlan0_clients+$wlan01_clients;
+}
 
 function get_notifications()
 {

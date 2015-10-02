@@ -1,5 +1,5 @@
 function karma_reload_config(){
-  get_tab('/components/system/pineap/tabs/config.php');
+  refresh_current_tab();
 }
 
 function karma_handle_form(data){

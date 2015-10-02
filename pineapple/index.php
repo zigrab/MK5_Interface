@@ -41,7 +41,7 @@ if (isset($_GET['noJS'])) {
                     <span><a href="#" onclick="clear_notifications()">- clear -</a></span>
                 </div>
             </span>
-            <span class="statusBar_clock">. . .</span>
+            <span class="statusBar_clock">Clients: {-}</span>
             <span class='logout'><a href="/?logout"><img src="/includes/img/exit.png"></a></span>
         </div>
         <span>

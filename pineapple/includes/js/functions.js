@@ -64,7 +64,7 @@ function notification_handler(){
     notification_interval = setInterval(function(){
         $.get("/includes/api/statusbar_handler.php", {action: "get_status_bar"}, function(data){
             data = JSON.parse(data);
-            $(".statusBar_clock").html(data[0]);
+            $(".statusBar_clock").html('Clients: {' + data[0] + '}');
 
             var notifications = data[1];
             if (notifications.length == 0){
@@ -311,6 +311,38 @@ function setup_window_listeners(){
     $(document).on("click", "help", function(){
         var help = $(this).attr('id').split(':');
         show_help(help[0], help[1]);
+    });
+
+    $(document).on('click', 'toggle', function(){
+        var toggle = $(this);
+        var infusion = toggle.attr('infusion');
+        var action = toggle.attr('action');
+        var type = 'infusions';
+
+        var callback = toggle.attr('callback');
+
+        if (toggle.attr('system') != undefined) {
+            type = 'system';
+        }
+
+        $(this).replaceWith("<img class='toggle_spinner' id='" + infusion + "_" + action +"' src='/includes/img/throbber.gif'>");
+        var value = (toggle.attr('checked') == undefined) ? 'pineapple_toggle_on' : '';
+        var url = '/components/' + type + '/' + infusion + '/functions.php?pineapple_toggle=' + action + '&' + value;
+        
+        $.get(url).always(function(data){
+            $(".toggle_spinner#" + infusion + "_" + action).replaceWith(toggle);
+            if (data == 'success') {
+                if (value) {
+                    $("toggle[infusion=" + infusion + "][action=" + action + "]").attr('checked', '');
+                } else {
+                    $("toggle[infusion=" + infusion + "][action=" + action + "]").removeAttr('checked');
+                }
+
+                if ($.isFunction(window[callback])) {
+                    window[callback](data);
+                }
+            }
+        });
     });
 }
 
@@ -630,4 +662,3 @@ $.get=function ( url, data, callback, type ) {
         success: callback,
     });
 }
-

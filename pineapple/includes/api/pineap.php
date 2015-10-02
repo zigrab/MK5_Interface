@@ -7,7 +7,7 @@ class PineAP
 
     private function communicate($command, $return_bytes = 0)
     {
-        $socket = @fsockopen("unix:///var/run/pinejector.sock");
+        $socket = @fsockopen("unix:///var/run/pineap.sock");
         if ($socket) {
             fwrite($socket, $command);
 
@@ -114,6 +114,11 @@ class PineAP
         return $this->communicate("target:" . $mac);
     }
 
+    public function deauth($target, $source, $channel)
+    {
+        return $this->communicate("deauth:{$target}{$source}{$channel}");
+    }
+
     public function addSSID($ssid)
     {
         return $this->communicate("add_ssid:" . $ssid);
@@ -123,6 +128,14 @@ class PineAP
     {
         if ($this->communicate("del_ssid:" . $ssid)) {
             exec("sed -r '/^({$ssid})$/d' -i /etc/pineapple/ssid_file");
+            return true;
+        }
+        return false;
+    }
+
+    public function clearSSIDs()
+    {
+        if ($this->communicate("clear_ssids")) {
             return true;
         }
         return false;

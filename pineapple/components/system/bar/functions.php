@@ -267,11 +267,11 @@ function preinstall($install_string)
             $html .= "</center>";
         }
     } else {
-        $html .= "There is not enough free internal space. Please install to usb!<br />";
+        $html .= "There is not enough free internal space. Please install to the sdcard!<br />";
         $html .= "<br /><br /><br /><br />";
         if (sd_available()) {
             if ($infusion->type == 'sys') {
-                $html .= "<center>System infusions cannot be installed to USB.</center>";
+                $html .= "<center>System infusions cannot be installed to the sdcard.</center>";
             } else {
                 $html .= "<center><a href='#sys/bar/download_external/".json_encode($infusion)."/popup'>Install to SD storage</a></center>";
             }
@@ -536,7 +536,7 @@ function package_infusion($infusion)
         $.get('/components/system/bar/functions.php?package_status', function(data){
           if(data != 'working'){
             clearInterval(package_interval);
-            $('#download_link').html('<a href=\"/components/system/bar/functions.php?download=$infusion\">Download \"$infusion\"</a>');
+            $('#download_link').html('<a href=\"/components/system/bar/functions.php?download=$infusion&_csrfToken='+ _csrfToken +'\">Download \"$infusion\"</a>');
         }
     });
 }, 500);

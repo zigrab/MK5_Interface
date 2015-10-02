@@ -1,532 +1,564 @@
+toggle {
+    display: inline-block;
+    vertical-align: bottom;
+    border: 1px dotted white;
+    min-width: 11px;
+    max-width: 11px;
+    min-height: 11px;
+    max-height: 11px;
+    background-color: black;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+
+.toggle_spinner {
+    min-width: 10px;
+    max-width: 10px;
+    min-height: 10px;
+    max-height: 10px;
+}
+
+toggle[checked] {
+    background-image: url('/includes/img/check.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 .notification_center {
-  position: absolute;
-  border: 1px solid green;
-  border-top: 0;
-  padding-top: 1em;
-  padding-right: 2px;
-  padding-left: 2px;
-  width: 49ex;
-  max-height: 500px;
-  background: black;
-  display: none;
-  text-align: center;
-  z-index: 90;
-  overflow: auto;
+    position: absolute;
+    border: 1px solid green;
+    border-top: 0;
+    padding-top: 1em;
+    padding-right: 2px;
+    padding-left: 2px;
+    width: 49ex;
+    max-height: 500px;
+    background: black;
+    display: none;
+    text-align: center;
+    z-index: 90;
+    overflow: auto;
 }
 
 .notification {
-  border-bottom: 1px solid green;
-  padding-bottom: 5px;
-  padding-top: 7px;
-  padding-left: 2px;
-  min-height: 1.5em;
-  text-align: left;
+    border-bottom: 1px solid green;
+    padding-bottom: 5px;
+    padding-top: 7px;
+    padding-left: 2px;
+    min-height: 1.5em;
+    text-align: left;
 }
 
 .notification_img {
-  visibility: hidden;
-  width: 3em;
-  float: right;
-  margin-right: 5ex;
+    visibility: hidden;
+    width: 3em;
+    float: right;
+    margin-right: 5ex;
 }
 
 .statusBar {
-  text-align: left;
-  margin: 0 auto;
-  padding: 3px;
-  width: 95%;
+    text-align: left;
+    margin: 0 auto;
+    padding: 3px;
+    width: 95%;
 }
 
 .statusBar_notification_toggle {
-  float: left;
-  text-decoration: none;
+    float: left;
+    text-decoration: none;
 }
 
 .statusBar_notification_toggle a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .statusBar_widget {
-  display: inline-block;
-  float: right;
-  right: 1px;
-  width: 50ex;
+    display: inline-block;
+    float: right;
+    width: 50ex;
 }
 
 .statusBar_clock {
-  text-align: center;
-  display: inline;
-  width: 12ex;
-  margin-left: 7ex;
+    text-align: center;
+    display: inline;
+    width: 12ex;
+    margin-left: 3ex;
 }
 
 .statusBar_view_toggle {
-  color: white;
-  margin-right: 7ex;
+    color: white;
+    margin-right: 7ex;
 }
 
 .statusBar_view_toggle a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .view_selection {
-  position: absolute;
-  background: black;
-  border: 1px solid green;
-  border-top: 0;
-  display: none;
-  z-index: 90;
-  width: 26ex;
+    position: absolute;
+    background: black;
+    border: 1px solid green;
+    border-top: 0;
+    display: none;
+    z-index: 90;
+    width: 26ex;
 }
 
 .view_item {
-  border-bottom: 1px solid green;
-  padding-bottom: 5px;
-  padding-top: 7px;
-  padding-left: 2px;
-  min-height: 1.5em;
-  text-align: left;
+    border-bottom: 1px solid green;
+    padding-bottom: 5px;
+    padding-top: 7px;
+    padding-left: 2px;
+    min-height: 1.5em;
+    text-align: left;
 }
 
 .view_item:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .statusBar_notification {
-  display: inline;
-  float: right;
-  padding-left: 15px;
+    display: inline;
+    float: right;
+    padding-left: 15px;
 }
 
 .logout {
-  float: right;
-  padding-left: 15px;
+    float: right;
+    padding-left: 15px;
 }
 
 .logout img {
-  width: 2.9em;
-  height: 1.3em;
+    width: 2.9em;
+    height: 1.3em;
 }
 
 .tiles {
-  text-align: center;
-  width: 100%;
-  margin-top: 2%;
-  height: 88%;
-  overflow: auto;
+    text-align: center;
+    width: 100%;
+    margin-top: 2%;
+    height: 88%;
+    overflow: auto;
 }
 
 .tiles_wrapper {
-  display: inline;
-  margin: 0 auto;
-  overflow-y: auto;
-  height: 100%;
-  text-align: center;
-  min-height: 250px;
+    display: inline;
+    margin: 0 auto;
+    overflow-y: auto;
+    height: 100%;
+    text-align: center;
+    min-height: 250px;
 }
 
 .tiles_wrapper_seperator {
-  display: inline-block;
-  overflow: auto;
-  width: 77%;
-  height: 100%;
+    display: inline-block;
+    overflow: auto;
+    width: 77%;
+    height: 100%;
 }
 
 .side_bar {
-  float: left;
-  display: inline-block;
-  height: 100%;
-  width: 22%;
-  border: 1px solid red;
+    float: left;
+    display: inline-block;
+    height: 100%;
+    width: 22%;
+    border: 1px solid red;
 }
 
 .tile {
-  text-align: left;
-  margin: 1%;
+    text-align: left;
+    margin: 1%;
 
-  vertical-align: top;
-  display: inline-block;
+    vertical-align: top;
+    display: inline-block;
 
-  width: 22%;
-  min-width: 280px;
-  height: 250px;
-  min-height: 190px;
-  height: 30%;
-  overflow: hidden;
+    width: 22%;
+    min-width: 280px;
+    height: 250px;
+    min-height: 190px;
+    height: 30%;
+    overflow: hidden;
 
-  border: 3px solid green;
+    border: 3px solid green;
 }
 
 .tile_title {
-  text-align: center;
-  text-decoration: underline;
-  padding-bottom: 5px;
-  cursor: pointer;
-  background: green; /*#186018*/
-  width: 100%;
+    text-align: center;
+    text-decoration: underline;
+    padding-bottom: 5px;
+    cursor: pointer;
+    background: green; /*#186018*/
+    width: 100%;
 }
 
 .tile_title_wrapper {
-  text-align: center;
-  text-decoration: underline;
-  padding-bottom: 5px;
-  background: green; /*#186018*/
-  width: 100%;
+    text-align: center;
+    text-decoration: underline;
+    padding-bottom: 5px;
+    background: green; /*#186018*/
+    width: 100%;
 }
 
 .tile_remove {
-  float: right;
-  font-weight: bold;
-  cursor: pointer;
-  padding-right: 3px;
+    float: right;
+    font-weight: bold;
+    cursor: pointer;
+    padding-right: 3px;
 }
 
 .refresh {
-  max-height: 2em;
-  max-width: 2em;
-  background-image: url(/includes/img/refresh.png);
-  background-position: center left;
-  padding-left: 1.4em;
-  background-size: 1.3em, 1.3em;
-  background-repeat: no-repeat;
+    max-height: 2em;
+    max-width: 2em;
+    background-image: url(/includes/img/refresh.png);
+    background-position: center left;
+    padding-left: 1.4em;
+    background-size: 1.3em, 1.3em;
+    background-repeat: no-repeat;
 }
 
 .tile_expanded {
-  margin: auto;
-  text-align: left;
-  color: white;
-  background: black;
+    margin: auto;
+    text-align: left;
+    color: white;
+    background: black;
 
-  position: absolute;
-  right: -50%;
-  left: -50%;  
-  border: 3px solid green;
-  width: 93.25%;
-  height: 85%;
+    position: absolute;
+    right: -50%;
+    left: -50%; 
+    top: 60px; 
+    border: 3px solid green;
+    width: 93.25%;
+    height: 85%;
 
-  z-index: 80;
-  /*padding: 10px;*/
+    z-index: 80;
+    /*padding: 10px;*/
 
-  overflow-y: hidden;
-  overflow-x: hidden;
-  visibility: hidden;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    visibility: hidden;
 }
 
 .tile_content {
-  padding: 10px;
+    padding: 10px;
 }
 
 .tile_content a{
-  color: white;
+    color: white;
 }
 
 .tile_stretch {
-  width: 100%;
-  display: inline-block;
-  font-size: 0;
-  line-height: 0;
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 0;
 }
 
 .hidden_bar {
-  position: absolute;
-  bottom: 1px;
-  background: black;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  padding-left: 1em;
-  padding-right: 1em;
-  color: white;
-  width: 98%;
-  margin: auto;
-  text-align: center;
-  left: 1px;
-  right: 1px;
+    position: absolute;
+    bottom: 1px;
+    background: black;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+    padding-right: 1em;
+    color: white;
+    width: 98%;
+    margin: auto;
+    text-align: center;
+    left: 1px;
+    right: 1px;
 }
 
 .hidden_bar_mobile {
-  display: none;
-  position: absolute;
-  bottom: 1px;
-  background: black;
-  left: 1px;
-  right: 1px;
-  color: white;
-  width: 90%;
-  margin: auto;
-  text-align: center;
+    display: none;
+    position: absolute;
+    bottom: 1px;
+    background: black;
+    left: 1px;
+    right: 1px;
+    color: white;
+    width: 90%;
+    margin: auto;
+    text-align: center;
 }
 
 .hidden_bar a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .hidden_bar_mobile a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .hidden_bar_item {
-  margin-right: 1em;
-  margin-bottom: 5px;
-  padding-left: 5px;
-  padding-top: 0.5px;
-  padding-bottom: 0.5px;
-  width: 10em;
-  background: black;
-  cursor: pointer;
-  float: left;
-  overflow: hidden;
-  text-transform: capitalize;
-  border: solid 1px green;
+    margin-right: 1em;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    padding-top: 0.5px;
+    padding-bottom: 0.5px;
+    width: 10em;
+    background: black;
+    cursor: pointer;
+    float: left;
+    overflow: hidden;
+    text-transform: capitalize;
+    border: solid 1px green;
 }
 
 #close {
-  position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  text-decoration: none;
-  color: white;
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+    text-decoration: none;
+    color: white;
 }
 
 .popup {
-  visibility: hidden;
-  position: absolute; 
-  top: 7%; 
-  left: 50%;
-  min-height: 15em; 
-  width: 50em; 
-  margin-left: -25em; 
-  border: solid 2px green;
-  background-color: black;
-  padding: 1em; 
-  z-index: 100;
+    visibility: hidden;
+    position: absolute; 
+    top: 7%; 
+    left: 50%;
+    min-height: 15em; 
+    width: 50em; 
+    margin-left: -25em; 
+    border: solid 2px green;
+    background-color: black;
+    padding: 1em; 
+    z-index: 100;
 }
 
 .entropy {
-  color: gray;
+    color: gray;
 }
 
 .error {
-  color: red;
+    color: red;
 }
 
 .warning {
-  color: yellow;
+    color: yellow;
 }
 
 .success {
-  color: lime;
+    color: lime;
 }
 
 .overlay {
-  position: absolute;
-  display: inline-block;
-  vertical-align: top;
-  text-align: left;
-  width: 97%;
-  height: 90%;
-  padding: 20px;
-  padding-right: 50px;
-  overflow-y: auto;
+    position: absolute;
+    display: inline-block;
+    vertical-align: top;
+    text-align: left;
+    width: 97%;
+    height: 90%;
+    padding: 20px;
+    padding-right: 50px;
+    overflow-y: auto;
 }
 
 .overlay_col {
-  width: 22%;
-  vertical-align: top;
-  display: inline-block;
-  min-width: 350px;
+    width: 22%;
+    vertical-align: top;
+    display: inline-block;
+    min-width: 350px;
+}
+
+.overlay_clients a {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .overlay_ap {
-  text-align: left;
-  float: left;
-  width: 100%;
-  margin-bottom: 40px;
-  margin-right: 10px;
+    text-align: left;
+    float: left;
+    width: 100%;
+    margin-bottom: 40px;
+    margin-right: 10px;
 }
 
 .overlay_loading {
-  position: absolute;
-  top: 12%;
-  left: 50%;
-  width: 20em;
-  margin-left: -10em;
-  display: none;
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    width: 20em;
+    margin-left: -10em;
+    display: none;
 }
 
 .overlay_message {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 input[type=text], textarea, input[type=password] {
-  border: 1px;
-  background-color:black; 
-  color:white; 
-  border-style:dotted;
-  resize: none; 
+    border: 1px;
+    background-color:black; 
+    color:white; 
+    border-style:dotted;
+    resize: none; 
 }
 
 
 a {
-  color: white;
+    color: white;
 }
 
 body {
-  background: black;
-  color: white;
-  font-family: monospace;
-  overflow-x: hidden;
+    background: black;
+    color: white;
+    font-family: monospace;
+    overflow-x: hidden;
 }
 
 help:before {
-  content: "?";
-  text-align: center;
-  margin-left: 3px;
-  vertical-align: super;
-  font-size: 0.8em;
-  border: 1px solid white;
-  border-radius: 2ex;
-  width: 1.5ex;
-  height: 1.5ex;
-  line-height: 1.8ex;
-  padding: 1px;
-  display: inline-block;
-  cursor: pointer;
+    content: "?";
+    text-align: center;
+    margin-left: 3px;
+    vertical-align: super;
+    font-size: 0.8em;
+    border: 1px solid white;
+    border-radius: 2ex;
+    width: 1.5ex;
+    height: 1.5ex;
+    line-height: 1.8ex;
+    padding: 1px;
+    display: inline-block;
+    cursor: pointer;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  padding-right: 10px;
-  visibility: visible;
+    width: 8px;
+    padding-right: 10px;
+    visibility: visible;
 }
 
 ::-webkit-scrollbar-track {
-  padding-right: 10px;
-  visibility: visible;
+    padding-right: 10px;
+    visibility: visible;
 
 }
 
 ::-webkit-scrollbar-thumb {
-  background: green;
-  padding-right: 10px;
-  visibility: visible;
+    background: green;
+    padding-right: 10px;
+    visibility: visible;
 }
 
 #tabs_wrapper {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 #tabs {
-  float: left;
-  bottom: 0px;
-  left: 0px;
-  width: 97.7%;
-  height:30px;
-  border-bottom: solid 1px green;
-  padding-right: 1px;
-  margin-top: 30px;
-  margin-bottom: 0px;
-  color: white;
+    float: left;
+    bottom: 0px;
+    left: 0px;
+    width: 97.7%;
+    height:30px;
+    border-bottom: solid 1px green;
+    padding-right: 1px;
+    margin-top: 30px;
+    margin-bottom: 0px;
+    color: white;
 }
 
 #tabs li {
-  float:left;
-  /*display: inline-block;*/
-  list-style:none;
-  border-top:1px solid green;
-  border-left:1px solid green;
-  border-right:1px solid green;
-  border-bottom: solid 1px green;
-  margin-right:5px;
-  outline:none;
+    float:left;
+    /*display: inline-block;*/
+    list-style:none;
+    border-top:1px solid green;
+    border-left:1px solid green;
+    border-right:1px solid green;
+    border-bottom: solid 1px green;
+    margin-right:5px;
+    outline:none;
 }
 #tabs li a {
-  font-family:Arial, Helvetica, sans-serif;
-  font-size: small;
-  font-weight: bold;
-  padding-top: 5px;
-  padding-left: 7px;
-  padding-right: 7px;
-  padding-bottom: 8px;
-  display:block;
-  background: green;
-  outline:none;
-  cursor: pointer;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size: small;
+    font-weight: bold;
+    padding-top: 5px;
+    padding-left: 7px;
+    padding-right: 7px;
+    padding-bottom: 8px;
+    display:block;
+    background: green;
+    outline:none;
+    cursor: pointer;
 }
 #tabs li a.inactive {
-  background: black;
-  outline:none;
+    background: black;
+    outline:none;
 }
 #tabs li a:hover, #tabs li a.inactive:hover {
-  background: green;
-  outline:none;
+    background: green;
+    outline:none;
 }
 
 .tabContainer {
-  padding: 10px;
-  color: white;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height:100%;
-  position: absolute;
-  top: 62px;
-  left:0px;
-  right:0px; 
-  bottom:0px;
+    padding: 10px;
+    color: white;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height:100%;
+    position: absolute;
+    top: 62px;
+    left:0px;
+    right:0px; 
+    bottom:0px;
 }
 
 
 @media (max-width: 900px) {
-  .hidden_bar {
-    width: 90%;
-    padding-top: 5px;
-    padding: 0px;
-    padding-bottom: 25px;
-    text-align: center !important;
-    display: none;
-  }
-  .hidden_bar_mobile {
-    display: block;
-  }
-  .hidden_bar_item {
-    float: none !important;
-    display: inline-block !important;
-  }
-  .statusBar_clock {
-    display: none;
-  }
-  .statusBar_widget {
-    width: 31ex
-  }
-  .notification_center {
-    width: 30ex;
-  }
-  .notification_img {
-    display: none;
-    margin-right: 1px;
-  }
-  .overlay_col {
-    min-width: 300px;
-  }
-  .overlay_loading {
-    position: absolute;
-    left: 1px;
-    right: 1px;
-    top: 35%;
-    margin: auto;
-  }
-  .overlay {
-    width: 78%;
-    height: 87%;
-    overflow: none;
-  }
+    .hidden_bar {
+        width: 90%;
+        padding-top: 5px;
+        padding: 0px;
+        padding-bottom: 25px;
+        text-align: center !important;
+        display: none;
+    }
+    .hidden_bar_mobile {
+        display: block;
+    }
+    .hidden_bar_item {
+        float: none !important;
+        display: inline-block !important;
+    }
+    .statusBar_clock {
+        display: none;
+    }
+    .statusBar_widget {
+        width: 32ex
+    }
+    .notification_center {
+        width: 31ex;
+    }
+    .notification_img {
+        display: none;
+        margin-right: 1px;
+    }
+    .overlay_col {
+        min-width: 300px;
+    }
+    .overlay_loading {
+        position: absolute;
+        left: 1px;
+        right: 1px;
+        top: 35%;
+        margin: auto;
+    }
+    .overlay {
+        width: 78%;
+        height: 87%;
+        overflow: none;
+    }
 }
 
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-  .popup {
-    width: 280px;
-    margin: auto;
-    left: 20px;
-    right: 20px;
-    position: absolute;
-  }
+    .popup {
+        width: 280px;
+        margin: auto;
+        left: 20px;
+        right: 20px;
+        position: absolute;
+    }
 }

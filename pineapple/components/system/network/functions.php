@@ -2,9 +2,40 @@
 
 namespace pineapple;
 
-$pineapple = new Pineapple(__FILE__);
-
 include('/pineapple/includes/api/tile_functions.php');
+
+
+$pineapple = new Pineapple(__FILE__);
+$pineapple->magicToggleFunctions(true);
+
+
+
+function toggle_wlan0($enable) {
+    if ($enable) {
+        exec('ifconfig wlan0 up');
+    } else {
+        exec('ifconfig wlan0 down');
+    }
+    return true;
+}
+
+function toggle_wlan1($enable) {
+    if ($enable) {
+        exec('ifconfig wlan1 up');
+    } else {
+        exec('ifconfig wlan1 down');
+    }
+    return true;
+}
+
+function toggle_wlan2($enable) {
+    if ($enable) {
+        exec('ifconfig wlan2 up');
+    } else {
+        exec('ifconfig wlan2 down');
+    }
+    return true;
+}
 
 
 if (isset($_GET['change_hostname'])) {
@@ -155,24 +186,6 @@ if (isset($_GET['internet_ip'])) {
         echo  file_get_contents("https://wifipineapple.com/ip.php", false, $context);
     } else {
         echo '<font color="red">Error Connecting</font>';
-    }
-}
-
-if (isset($_GET['enable'])) {
-    $interface = $_GET['enable'];
-    if ($interface == "wlan0") {
-        exec('wifi');
-    } else {
-        exec('ifconfig wlan1 up');
-    }
-}
-
-if (isset($_GET['disable'])) {
-    $interface = $_GET['disable'];
-    if ($interface == "wlan0") {
-        exec('killall hostapd && ifconfig wlan0 down');
-    } else {
-        exec('ifconfig wlan1 down');
     }
 }
 

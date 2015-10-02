@@ -43,7 +43,7 @@ touch("/etc/pineapple/ssid_file");
 <br /><br />
 
 <fieldset>
-    <legend>SSID Management</legend>
+    <legend>SSID Management - <a href='#sys/pineap/action/clear_ssids/refresh_current_tab'>Clear SSIDs</a></legend>
     <textarea rows='20' style='min-width:100%;' readonly><?=file_get_contents("/etc/pineapple/ssid_file")?></textarea>
     <br /><br />
     <form method="POST" action="/components/system/pineap/functions.php?pineAP_SSID" onsubmit="$(this).AJAXifyForm(save_pineap_settings); return false;">

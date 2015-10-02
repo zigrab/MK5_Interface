@@ -1,33 +1,37 @@
 #!/usr/bin/python
-
 import socket
 import os
 import time
 import sys
 import re
 
+
 def communicate(command):
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     try:
-        sock.connect('/var/run/pinejector.sock')
+        sock.connect('/var/run/pineap.sock')
         sock.send(command)
     except:
         print 'Error connecting to PineAP. Have you started it yet?'
 
+
 def start_pineAP():
     print "Starting PineAP. This may take a few seconds."
     stop_pineAP()
-    os.system("pineapple karma start &> /dev/null")
     os.system("if ! ifconfig -a | grep -q mon0; then airmon-ng start wlan1 &>/dev/null; fi;")
-    os.system("mac=$(ifconfig wlan0 | grep HWaddr | awk '{print $5}'); chan=$(iw dev wlan0 info | grep channel | awk '{print $2}'); echo 'pinejector mon0 '$chan' '$mac | at now &> /dev/null")
+    os.system("echo 'pinejector mon0'| at now &> /dev/null")
+    os.system("mac=$(ifconfig wlan0 | grep HWaddr | awk '{print $5}'); chan=$(iw dev wlan0 info | grep channel | awk '{print $2}'); echo 'pineap '$chan' '$mac | at now &> /dev/null")
     print "PineAP started."
 
+
 def stop_pineAP():
-    os.system("pineapple karma stop &> /dev/null")
     os.system("killall pinejector &> /dev/null")
+    os.system("killall pineap &> /dev/null")
+
 
 def check_MAC(mac):
     return bool(re.match("([a-fA-F0-9]{2}[:]?){6}$", mac))
+
 
 def interpret_commands(commands):
     if len(commands) < 2:
@@ -42,12 +46,15 @@ def interpret_commands(commands):
     elif commands[1] == "stop":
         stop_pineAP()
         sys.exit()
+    elif commands[1] == "clear_ssids":
+        communicate("clear_ssids")
+        sys.exit()
 
     if len(commands) < 3:
         print_usage()
         sys.exit()
 
-    elif commands[1] == "dogma":
+    if commands[1] == "dogma":
         if commands[2] == "start":
             communicate("beaconer:on")
         elif commands[2] == "stop":
@@ -56,6 +63,7 @@ def interpret_commands(commands):
             fail = True
     elif commands[1] == "responder":
         if commands[2] == "start":
+            os.system("pineapple karma start &> /dev/null")
             communicate("responder:on")
         elif commands[2] == "stop":
             communicate("responder:off")
@@ -63,9 +71,10 @@ def interpret_commands(commands):
             fail = True
     elif commands[1] == "harvester":
         if commands[2] == "start":
-            communicate("harvester:on")
+            os.system("pineapple karma start &> /dev/null")
+            communicate("harvest:on")
         elif commands[2] == "stop":
-            communicate("harvester:off")
+            communicate("harvest:off")
         else:
             fail = True
     elif commands[1] == "settarget":
@@ -101,13 +110,24 @@ def interpret_commands(commands):
             communicate("response_interval:agressive")
         else:
             fail = True
+    elif commands[1] == "deauth":
+        if len(commands) == 5:
+            if check_MAC(commands[2]) and check_MAC(commands[3]):
+                communicate("deauth:" + commands[2] + commands[3] + commands[4])
+            else:
+                fail = True
+        else:
+            fail = True
     else:
         fail = True
 
     if fail:
         print_usage()
 
+
 def print_usage():
+    half_tab = "   "
+
     print ""
 
     print "PineAP command line utility"
@@ -115,31 +135,38 @@ def print_usage():
     print ""
 
     print "Options:"
-    print "\tstart \t - starts PineAP"
-    print "\tstop \t - stops PineAP"
+    print half_tab + "start \t\t\t - starts PineAP"
+    print half_tab + "stop \t\t\t - stops PineAP"
 
     print ""
 
-    print "\tdogma [start|stop] \t - starts / stops Dogma"
-    print "\tresponder [start|stop] \t - starts / stops Beacon Response"
-    print "\tharvester [start|stop] \t - starts / stops Auto Harvester"
+    print half_tab + "dogma [start|stop] \t\t - starts / stops Dogma"
+    print half_tab + "responder [start|stop] \t - starts / stops Beacon Response"
+    print half_tab + "harvester [start|stop] \t - starts / stops Auto Harvester"
 
     print ""
 
-    print "\tsetsource [mac] \t - set PineAP's source. eg: aa:bb:cc:dd:ee:ff"
-    print "\tsettarget [mac] \t - set PineAP's target. eg: aa:bb:cc:dd:ee:ff"
+    print half_tab + "setsource [mac] \t\t - set PineAP's source. eg: aa:bb:cc:dd:ee:ff"
+    print half_tab + "settarget [mac] \t\t - set PineAP's target. eg: aa:bb:cc:dd:ee:ff"
 
     print ""
 
-    print "\tbeaconinterval [low, normal, fast] \t - Change Beacon interval"
-    print "\tresponseinterval [low, normal, fast] \t - Change Response interval"
+    print half_tab + "beaconinterval   [low, normal, fast] \t - Change Beacon interval"
+    print half_tab + "responseinterval [low, normal, fast] \t - Change Response interval"
 
     print ""
 
-    print "\taddssid '[ssid]' \t- Adds SSID to PineAP."
-    print "\tdelssid '[ssid]' \t- Deletes SSID from PineAP."
+    print half_tab + "addssid [ssid] \t\t- Adds SSID to PineAP."
+    print half_tab + "delssid [ssid] \t\t- Deletes SSID from PineAP."
+    print half_tab + "clear_ssids    \t\t- Clears all SSIDs"
+    print ""
+
+    print half_tab + "deauth [client] [AP] [channel] - Deauthenticates client from an AP."
+    print half_tab + "                                 Client / AP eg: aa:bb:cc:dd:ee:ff"
+    print half_tab + "                                 Channel: 1-14"
 
     print ""
+
 
 if __name__ == "__main__":
     interpret_commands(sys.argv)

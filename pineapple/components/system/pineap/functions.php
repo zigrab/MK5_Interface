@@ -3,20 +3,12 @@ namespace pineapple;
 
 include('/pineapple/includes/api/tile_functions.php');
 
+$pineapple = new Pineapple(__FILE__);
+$pineapple->magicToggleFunctions(true);
+
+
 if (isset($_GET['action'])) {
     switch ($_GET['action']) {
-        case 'start_karma':
-            exec("pineapple karma start");
-            break;
-        case 'stop_karma':
-            exec("pineapple karma stop");
-            break;
-        case 'start_autostart':
-            autostart('enable');
-            break;
-        case 'stop_autostart':
-            autostart('disable');
-            break;
         case 'start_pineap':
             $mac = exec("ifconfig wlan0 | grep HWaddr | awk '{print $5}'");
             $chan = exec("iw dev wlan0 info | grep channel | awk '{print $2}'");
@@ -27,10 +19,12 @@ if (isset($_GET['action'])) {
             }
 
             exec("ifconfig wlan1 down");
-            exec("echo 'pinejector {$iface} {$chan} {$mac}' | at now");
+            exec("echo 'pinejector {$iface}' | at now");
+            exec("echo 'pineap {$chan} {$mac}' | at now");
             break;
         case 'stop_pineap':
             exec("killall pinejector");
+            exec("killall pineap");
             break;
         case 'start_beaconer':
             $pineAP = new PineAP();
@@ -56,6 +50,10 @@ if (isset($_GET['action'])) {
             $pineAP = new PineAP();
             $pineAP->disableHarvester();
             break;
+        case 'clear_ssids':
+            $pineAP = new PineAP();
+            $pineAP->clearSSIDs();
+            break;
         case 'get_log':
             echo get_log();
             break;
@@ -75,6 +73,78 @@ if (isset($_GET['action'])) {
             echo get_ssids();
             break;
         }
+}
+
+
+function toggle_karma($enable)
+{
+    if ($enable) {
+        exec("pineapple karma start");
+    } else {
+        exec("pineapple karma stop");
+    }
+    return true;
+}
+
+function toggle_karma_autostart($enable)
+{
+    if ($enable) {
+        autostart('enable');
+    } else {
+        autostart('disable');
+    }
+    return true;
+}
+
+function toggle_pineap($enable)
+{
+    if ($enable) {
+        $mac = exec("ifconfig wlan0 | grep HWaddr | awk '{print $5}'");
+        $chan = exec("iw dev wlan0 info | grep channel | awk '{print $2}'");
+        
+        $iface = exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'");
+        if (trim($iface) == "") {
+            $iface = exec("airmon-ng start wlan1 | grep 'enabled on' | awk '{print $5}' | sed s'/.$//'");
+        }
+
+        exec("ifconfig wlan1 down");
+        exec("echo 'pinejector {$iface}' | at now");
+        exec("echo 'pineap {$chan} {$mac}' | at now");
+    } else {
+        exec("killall pinejector");
+        exec("killall pineap");
+    }
+    return true;
+}
+
+function toggle_dogma($enable)
+{
+    $pineAP = new PineAP();
+    if ($enable) {
+        return $pineAP->enableBeaconer();
+    } else {
+        return $pineAP->disableBeaconer();
+    }
+}
+
+function toggle_beacon($enable)
+{
+    $pineAP = new PineAP();
+    if ($enable) {
+        return $pineAP->enableResponder();
+    } else {
+        return $pineAP->disableResponder();
+    }
+}
+
+function toggle_harvester($enable)
+{
+    $pineAP = new PineAP();
+    if ($enable) {
+        return $pineAP->enableHarvester();
+    } else {
+        return $pineAP->disableHarvester();
+    }
 }
 
 if(isset($_POST['karma_log_location'])){
@@ -109,8 +179,28 @@ if (isset($_GET['pineap_add_ssid'])) {
     $pineAP = new PineAP();
     if ($pineAP->addSSID(rawurldecode($_GET['pineap_add_ssid']))) {
         echo htmlspecialchars_decode(rawurldecode($_GET['pineap_add_ssid']), ENT_QUOTES);
+    }   
+}
+
+if (isset($_GET['karma_ssidFilter_del'])) {
+    echo del_ssid(htmlspecialchars_decode(rawurldecode($_GET['karma_ssidFilter_del'])));
+}
+
+if (isset($_GET['karma_ssidFilter_add'])) {
+    echo add_ssid(htmlspecialchars_decode(rawurldecode($_GET['karma_ssidFilter_add'])));
+}
+
+if (isset($_GET['deauth'])) {
+    $target = substr($_GET['deauth'], 0, 17);
+    $source = substr($_GET['deauth'], 17, 17);
+    $channel = substr($_GET['deauth'], 43);
+
+    $pineAP = new PineAP();
+
+    if ($pineAP->deauth($target, $source, $channel)) {
+        echo "success";
     }
-    
+
 }
 
 if (isset($_GET['pineAP'])) {
@@ -205,13 +295,14 @@ function change_ssid($ssid, $persistence=false){
 }
 
 function add_ssid($ssid){
-    exec("pineapple karma add_ssid '".$ssid."'");
+    $ssid = escapeshellarg($ssid);
+    exec("pineapple karma add_ssid {$ssid}");
     return "<font color='lime'>SSID added to list.</font>";
-
 }
 
 function del_ssid($ssid){
-    exec("pineapple karma del_ssid '".$ssid."'");
+    $ssid = escapeshellarg($ssid);
+    exec("pineapple karma del_ssid {$ssid}");
     return "<font color='lime'>SSID removed from list.</font>";
 }
 

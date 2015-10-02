@@ -102,7 +102,7 @@ function draw_client_data(station_list)
             if (!$('#' + bssid.replace(/:/g,'')).find(".overlay_clients").length) {
                 $('#' + bssid.replace(/:/g,'')).append("<div class='overlay_clients'>Clients:<br /></div>");
             }
-            $('#'+bssid.replace(/:/g,'')).find(".overlay_clients").append(station + "<br />");
+            $('#'+bssid.replace(/:/g,'')).find(".overlay_clients").append("<a href='#' onclick='recon_client_action($(this))'>" + station + "</a>" + "<br />");
         } else {
             if (bssid.length) {
                 if (!$("#out_of_range").length) {
@@ -139,7 +139,7 @@ function draw_ap_data(ap_list)
         }else{
             var security = "Open";
         }
-        ap_item += bssid + "<br />Security: " +  security + "<br />Channel: " + ap_list[bssid]['channel'];
+        ap_item += bssid + "<br />Security: " +  security + "<br /><span id='recon_chan'>Channel: " + ap_list[bssid]['channel'] + '</span>';
         ap_item += "<br /><br />";
         ap_item += "</fieldset></div>";
         $("#"+col+".overlay_col").append(ap_item);
@@ -242,14 +242,34 @@ function recon_ap_action(ssid) {
     var popup_html = "";
 
     popup_html += "<b>Access Point Actions:</b><br /><br />";
-    popup_html += "<a href='#sys/pineap/pineap_add_ssid/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add to PineAP SSID list</a>";
+    popup_html += "<a href='#sys/pineap/pineap_add_ssid/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add to PineAP SSID list</a><br>";
+    popup_html += "<a href='#sys/pineap/karma_ssidFilter_add/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add SSID to Karma filter</a><br>";
+    popup_html += "<a href='#sys/pineap/karma_ssidFilter_del/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Remove SSID to Karma filter</a><br>";
     popup(popup_html);
+}
+
+function recon_client_action(client) {
+    var source = client.parent().parent().attr('id').replace(/(.{2})/g, '$1:').slice(0, -1);
+    var target = client.text();
+    var channel = client.parent().parent().find("#recon_chan").text();
+    var client_actions = "<a href='#sys/pineap/deauth/" + encodeURIComponent(target + source + channel) + "/pineAP_deauth_callback'>Deauth Client</a>";
+
+    popup(client_actions);
+}
+
+function pineAP_deauth_callback(data) {
+    if (data.length) {
+        popup("<center><img style='width: 2.0em;' src='/includes/img/throbber.gif'></center>");
+        setTimeout(close_popup, 1000);
+    } else {
+        popup("<center><span class='error'>Error sending deauth. PineAP must be started.</span></center>");
+    }
 }
 
 function pineAP_add_ssid_callback(ssid) {
     if (ssid.length) {
-        notify("'"+ decodeURIComponent(ssid) +"' added to PineAP SSID list.");
-        close_popup();
+        popup("<center><img style='width: 2.0em;' src='/includes/img/throbber.gif'></center>");
+        setTimeout(close_popup, 1000);
     } else {
         popup("<span class='error'>Error adding SSID. PineAP must be turned on to add SSIDs to the list.</span>");
     }

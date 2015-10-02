@@ -140,7 +140,7 @@ function handleSSID($post)
 
         if (trim(exec("mount | grep /sd | awk {'print $5'}")) != "vfat") {
             $text .= "<br /><br />For <font color='red'>best performance</font> you are advised to <b>format the Micro SD card ext4</b>. 
-                      To do so click <b>Resouces</b> then <b>USB Info</b> then <b><u>Format SD Card</u/></b>.";
+                      To do so click <b>Resources</b> then <b>USB Info</b> then <b><u>Format SD Card</u/></b>.";
         }
 
         $text .= "

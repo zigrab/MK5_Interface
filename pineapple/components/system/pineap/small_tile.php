@@ -1,110 +1,71 @@
 <?php
 namespace pineapple;
 
-
-include_once('/pineapple/includes/api/tile_functions.php');
-echo "MK5 Karma<help id='pineap:karma'></help> ";
-if (get_karma_status()) {
-    echo "<font color=\"lime\">Enabled</font>.&nbsp; | <a href='#sys/pineap/action/stop_karma/pineap_reload_tile'>Stop</a><br />";
-} else {
-    echo "<font color=\"red\">Disabled</font>. | <a href='#sys/pineap/action/start_karma/pineap_reload_tile'>Start</a><br />"; 
-}
-
-echo "Autostart ";
-if (get_autostart_status()) {
-    echo "<font color=\"lime\">Enabled</font>.&nbsp; | <a href='#sys/pineap/action/stop_autostart/pineap_reload_tile'>Disable</a><br />";
-} else {
-    echo "<font color=\"red\">Disabled</font>. | <a href='#sys/pineap/action/start_autostart/pineap_reload_tile'>Enable</a><br />"; 
-}
-
-echo "<br /><br />";
-
-
-echo "PineAP<help id='pineap:pineap'></help> ";
-if (get_pineap_status()) {
-    echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_pineap/pineap_reload_tile'>Disable</a><br />";
-} else {
-    echo "<span id='pineap_status'><span class='error'>Disabled</span>. | <a href='#' onclick='start_pineap()'>Enable</a></span><br />";
-}
-
-echo "Dogma<help id='pineap:dogma'></help> ";
-if (get_beaconer_status()) {
-    echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_beaconer/pineap_reload_tile'>Disable</a><br />";
-} else {
-    echo "<span class='error'>Disabled</span>. &nbsp;| <a href='#sys/pineap/action/start_beaconer/pineap_reload_tile'>Enable</a><br />";
-}
-
-echo "Beacon Response<help id='pineap:beacon_response'></help> ";
-if (get_responder_status()) {
-    echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_responder/pineap_reload_tile'>Disable</a><br />";
-} else {
-    echo "<span class='error'>Disabled</span>. | <a href='#sys/pineap/action/start_responder/pineap_reload_tile'>Enable</a><br />";
-}
-
-echo "Auto Harvester<help id='pineap:harvester'></help> ";
-if (get_harvester_status()) {
-    echo "<span class='success'>Enabled</span>. | <a href='#sys/pineap/action/stop_harvester/pineap_reload_tile'>Disable</a><br />";
-} else {
-    echo "<span class='error'>Disabled</span>. &nbsp;| <a href='#sys/pineap/action/start_harvester/pineap_reload_tile'>Enable</a><br />";
-}
-
-
-function get_beaconer_status()
+function dogmaStatus()
 {
     $pineAP = new PineAP();
     if ($pineAP->isBeaconerRunning()) {
-        return true;
+        return 'checked';
     }
     return false;
 }
 
-function get_harvester_status()
+function harvesterStatus()
 {
     $pineAP = new PineAP();
     if ($pineAP->isHarvesterRunning()) {
-        return true;
+        return 'checked';
     }
     return false;
 }
 
-function get_responder_status()
+function beaconStatus()
 {
     $pineAP = new PineAP();
     if ($pineAP->isResponderRunning()) {
-        return true;
+        return 'checked';
     }
     return false;
 }
 
-function get_pineap_status()
+function pineapStatus()
 {
-    exec("pgrep pinejector", $pids);
+    exec("pgrep pineap", $pids);
     if (empty($pids)) {
         return false;
     } else {
-        return true;
+        return 'checked';
     }
 }
 
-function get_karma_status()
+function karmaStatus()
 {
     if (exec("hostapd_cli -p /var/run/hostapd-phy0 karma_get_state | tail -1") == "ENABLED") {
-        return true;
+        return 'checked';
     }
     return false;
 }
 
-function get_autostart_status()
+function karmaAutostartStatus()
 {
     if (exec('ls /etc/rc.d/ | grep karma') == '') {
         return false;
     } else {
-        return true;
+        return 'checked';
     }
 }
 
-
 ?>
+
+
+<toggle infusion='pineap' action='toggle_karma' callback='pineap_reload_tile' system <?=karmaStatus()?>></toggle> MK5 Karma<help id='pineap:karma'></help> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<toggle infusion='pineap' action='toggle_karma_autostart'system <?=karmaAutostartStatus()?>></toggle> Autostart<br><br>
+
+<toggle infusion='pineap' action='toggle_pineap' callback='pineap_reload_tile' system <?=pineapStatus()?>></toggle> PineAP<help id='pineap:pineap'></help><br><br>
+<toggle infusion='pineap' action='toggle_dogma' callback='pineap_reload_tile' system <?=dogmaStatus()?>></toggle> Dogma<help id='pineap:dogma'></help><br><br>
+<toggle infusion='pineap' action='toggle_beacon' callback='pineap_reload_tile' system <?=beaconStatus()?>></toggle> Beacon Response<help id='pineap:beacon_response'></help><br><br>
+<toggle infusion='pineap' action='toggle_harvester' callback='pineap_reload_tile' system <?=harvesterStatus()?>></toggle> Harvester<help id='pineap:harvester'></help>
+
 
 <script type="text/javascript">
 

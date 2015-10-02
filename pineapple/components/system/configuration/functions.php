@@ -1,4 +1,10 @@
 <?php
+
+namespace pineapple;
+
+$pineapple = new Pineapple(__FILE__);
+$pineapple->magicToggleFunctions(true);
+
 include('/pineapple/includes/api/tile_functions.php');
 
 
@@ -45,12 +51,27 @@ if(isset($_GET['execute'])){
     echo execute($_POST['commands']);
 }
 
-if(isset($_GET['dnsspoof'])){
-    if($_GET['dnsspoof'] == 'start'){
+
+function toggle_dnsspoof($enable)
+{
+    if ($enable) {
         exec('echo "dnsspoof -i br-lan -f /etc/pineapple/spoofhost > /dev/null 2>/tmp/dnsspoof.log" | at now');
-    }else{
+    } else {
         exec('killall dnsspoof');
     }
+    return true;
+}
+
+function toggle_cron($enable)
+{
+    if ($enable) {
+        exec('/etc/init.d/cron enable');
+        exec('/etc/init.d/cron start');
+    } else {
+        exec('/etc/init.d/cron disable');
+        exec('/etc/init.d/cron stop');
+    }
+    return true;
 }
 
 if(isset($_GET['change_tz'])){
@@ -89,11 +110,9 @@ if(isset($_POST['dip'])){
 
 if(isset($_GET['cron'])){
     if($_GET['cron'] == 'start'){
-        exec('/etc/init.d/cron enable');
-        exec('/etc/init.d/cron start');
+
     }else{
-        exec('/etc/init.d/cron disable');
-        exec('/etc/init.d/cron stop');
+
     }
 }
 
