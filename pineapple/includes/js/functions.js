@@ -586,7 +586,7 @@ function replace_AJAX() {
     jQuery.ajax = function(settings) {
         switch ($.type(settings.data)) {
             case 'object':
-                if (settings.data.constructor.name == "FormData" || settings.data.constructor.name == "") {
+                if (settings.data.constructor === FormData) {
                     settings.data.append("_csrfToken", _csrfToken);
                 } else {
                     settings.data._csrfToken = _csrfToken;    
