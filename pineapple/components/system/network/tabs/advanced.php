@@ -19,7 +19,15 @@
         <tr>
             <td>Interface:</td>
             <td>
-                <select name="iface"><?php exec("iwconfig 2>&1 | grep 'IEE' | awk '{print $1}'", $interfaces);foreach($interfaces as $interface){echo "<option value='".str_replace('wlan', '', $interface)."'>$interface</option>";}?></select> <a href="#" onclick="get_mac(); return false;">Refresh</a>
+                <select name="iface">
+                    <?php
+                    exec("iwconfig 2>&1 | grep 'IEE' | awk '{print $1}'", $interfaces);
+                    foreach ($interfaces as $interface) {
+                        echo "<option value='".str_replace('wlan', '', $interface)."'>$interface</option>";
+                    }
+                    ?>
+                </select>
+                <a href="#" onclick="get_mac(); return false;">Refresh</a>
             </td>
         </tr>
         <tr>

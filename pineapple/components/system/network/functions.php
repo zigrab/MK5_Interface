@@ -10,7 +10,8 @@ $pineapple->magicToggleFunctions(true);
 
 
 
-function toggle_wlan0($enable) {
+function toggle_wlan0($enable)
+{
     if ($enable) {
         exec('ifconfig wlan0 up');
     } else {
@@ -19,7 +20,8 @@ function toggle_wlan0($enable) {
     return true;
 }
 
-function toggle_wlan1($enable) {
+function toggle_wlan1($enable)
+{
     if ($enable) {
         exec('ifconfig wlan1 up');
     } else {
@@ -28,7 +30,8 @@ function toggle_wlan1($enable) {
     return true;
 }
 
-function toggle_wlan2($enable) {
+function toggle_wlan2($enable)
+{
     if ($enable) {
         exec('ifconfig wlan2 up');
     } else {
@@ -296,6 +299,10 @@ if (isset($_GET['scan'])) {
 
     $iface = (is_numeric($_GET['scan'])) ? "wlan".$_GET['scan'] : "wlan1";
 
+    if (exec("iwconfig | grep {$iface}mon") != "") {
+        exec("airmon-ng stop {$iface}mon");
+    }
+
     $station_list = array();
     exec("ifconfig $iface up");
     exec("iw $iface scan", $scan);
@@ -486,11 +493,20 @@ function generate_mac()
 function set_mac($interface, $mac = null)
 {
     $pineapple = new Pineapple(__FILE__);
-    if (is_numeric($interface) || preg_match("/\d[\-]\d/", $interface)) {
+    if (preg_match("/\dmon/", $interface)) {
+        $is_monitor = true;
+    } else {
+        $is_monitor = false;
+    }
+    if (is_numeric($interface) || preg_match("/\d[\-]\d/", $interface) || $is_monitor) {
         if ($mac === null) {
             $mac = generate_mac();
         }
-        exec("uci set wireless.@wifi-iface[".$pineapple->getWifiIfaceUCIid($interface)."].macaddr=".$mac.";uci commit wireless;wifi");
+        if ($is_monitor) {
+            exec("ifconfig wlan{$interface} down && macchanger -m {$mac} wlan{$interface} && ifconfig wlan{$interface} up");
+        } else {
+            exec("uci set wireless.@wifi-iface[".$pineapple->getWifiIfaceUCIid($interface)."].macaddr=".$mac.";uci commit wireless;wifi");
+        }
         return $mac;
     }
 }
@@ -505,8 +521,17 @@ if (isset($_GET['change_mac'])) {
 }
 
 if (isset($_GET['get_mac'])) {
-    if (is_numeric($_GET['get_mac']) || preg_match("/\d[\-]\d/", $_GET['get_mac'])) {
-        echo exec("ifconfig wlan".$_GET['get_mac']." | grep HWaddr | awk '{print \$5}'");
+    if (preg_match("/\dmon/", $_GET['get_mac'])) {
+        $is_monitor = true;
+    } else {
+        $is_monitor = false;
+    }
+    if (is_numeric($_GET['get_mac']) || preg_match("/\d[\-]\d/", $_GET['get_mac']) || $is_monitor) {
+        $mac =  exec("ifconfig wlan".$_GET['get_mac']." | grep HWaddr | awk '{print \$5}'");
+        if ($is_monitor) {
+            $mac = substr(str_replace("-", ":", $mac), 0, 17);
+        }
+        echo $mac;
     }
 }
 

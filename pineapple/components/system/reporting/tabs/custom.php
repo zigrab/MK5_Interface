@@ -23,7 +23,7 @@ $rel_dir = str_replace('/pineapple', '', $directory);
   <legend>Custom Log</legend>
   <?php
   if(file_get_contents($directory.'custom') != ''){
-    $file = file_get_contents('/pineapple/components/system/logs/custom');
+    $file = file_get_contents('/pineapple/components/system/report/custom');
     exec('cat '.$file, $tail);
     echo "<pre>";
     foreach ($tail as $line) {

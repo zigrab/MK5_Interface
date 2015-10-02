@@ -3,9 +3,9 @@
 #    User Variables     #
 #   Please edit these   #
 #########################
-$name = 'Logs';  #Name of tile
+$name = 'Logs and Reporting';  #Name of tile
 $updatable = 'true';  #Should this tile auto-refresh
-$version = '1.4';
+$version = '1.0';
 
 
 #########################
@@ -18,5 +18,3 @@ include('/pineapple/includes/api/tile_functions.php');
 $directory = realpath(dirname(__FILE__)).'/';
 $rel_dir = str_replace('/pineapple', '', $directory);
 include('/pineapple/includes/api/handler_helper.php');
-
-?>  

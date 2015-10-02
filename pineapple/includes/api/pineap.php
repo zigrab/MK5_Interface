@@ -96,12 +96,12 @@ class PineAP
 
     public function setBeaconInterval($interval)
     {
-        return $this->communicate("beacon_interval:" . $interval);
+        return $this->communicate("beacon_interval:{$interval}");
     }
 
     public function setResponseInterval($interval)
     {
-        return $this->communicate("response_interval:" . $interval);
+        return $this->communicate("response_interval:{$interval}");
     }
 
     public function setSource($mac)
@@ -114,29 +114,36 @@ class PineAP
         return $this->communicate("target:" . $mac);
     }
 
-    public function deauth($target, $source, $channel)
+    public function deauth($target, $source, $channel, $multiplier = 1)
     {
-        return $this->communicate("deauth:{$target}{$source}{$channel}");
+        $channel = str_pad($channel, 2, "0", STR_PAD_LEFT);
+        return $this->communicate("deauth:{$target}{$source}{$channel}{$multiplier}");
     }
 
     public function addSSID($ssid)
     {
-        return $this->communicate("add_ssid:" . $ssid);
+        if (!$this->communicate("add_ssid:{$ssid}")) {
+            if (trim(exec("grep " . escapeshellarg($ssid) . " /etc/pineapple/ssid_file")) == "") {
+                file_put_contents("/etc/pineapple/ssid_file", "{$ssid}\n", FILE_APPEND);
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function delSSID($ssid)
     {
-        if ($this->communicate("del_ssid:" . $ssid)) {
-            exec("sed -r '/^({$ssid})$/d' -i /etc/pineapple/ssid_file");
-            return true;
-        }
-        return false;
+        $this->communicate("del_ssid:{$ssid}");
+        exec("sed -r '/^({$ssid})$/d' -i /etc/pineapple/ssid_file");
+
+        return true;
     }
 
     public function clearSSIDs()
     {
-        if ($this->communicate("clear_ssids")) {
-            return true;
+        if (!$this->communicate("clear_ssids")) {
+            file_put_contents("/etc/pineapple/ssid_file", "");
         }
         return false;
     }

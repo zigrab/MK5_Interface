@@ -1,8 +1,6 @@
 <?php
 namespace pineapple;
 
-
-
 function completeSetup()
 {
     if (file_exists('/pineapple/includes/welcome/ssid_set')) {
@@ -52,7 +50,7 @@ function firstMessage()
     if (file_exists('etc/pineapple/init')) {
         $text .= '<br /><br />Please refresh this page once you see the blinking LED pattern on your pineapple.';
     } else {
-        $text .= '<br /><br /><a href="?action=verify_pineapple"><h2>Continue</h2></a>';
+        $text .= '<br /><br /><a href="?action=secure_setup"><h2>Continue</h2></a>';
     }
     return $text;
 }
@@ -92,7 +90,7 @@ function ssidForm()
 
 function handlePassword($post)
 {
-    if (!isset($_SESSION['verified'])) {
+    if (!isset($_SESSION['secure'])) {
         return;
     }
     $pineapple = new Pineapple(__FILE__, true);
@@ -100,7 +98,6 @@ function handlePassword($post)
     $password2 = $post['password2'];
     if (!empty($password) && $password == $password2 && ($post['eula'] && $post['sw_license'])) {
         file_put_contents('/pineapple/includes/welcome/license_accepted', '');
-        //exec('date -s "2014-01-01 00:00:00"');
         $pineapple->changePassword($password, $password);
         $text = 'Password set successfully.';
         $text .= '<br /><br />';
@@ -164,73 +161,85 @@ function handleSSID($post)
     return $text;
 }
 
-function verifyForm($failed = false)
+function secureSetup()
 {
-    $text = "";
-    if ($failed) {
-        $text .= "<font color='red'>Wrong pattern entered. Please try again.</font><br />";
+    if (file_exists("/sd/skip_dip_setup")) {
+        $_SESSION['secure'] = true;
     }
-    $text .= "First, let's make sure that you own this pineapple.<br /><br />";
-    $text .= "
-    <form action='?action=verify_pineapple' method='POST'>
-      <table>
-        <tr><th></th><th>On</th><th>Off</th><th>Blink</th></tr>
-        <tr><td><img src='/includes/welcome/img/green.png' title='green'></td><td><input name='green' type='radio' tabindex='1' value='on'></td><td><input name='green' type='radio' tabindex='1' value='off'></td><td><input name='green' type='radio' tabindex='1' value='blink'></td></tr>
-        <tr><td><img src='/includes/welcome/img/amber.png' title='amber'></td><td><input name='amber' type='radio' tabindex='1' value='on'></td><td><input name='amber' type='radio' tabindex='1' value='off'></td><td><input name='amber' type='radio' tabindex='1' value='blink'></td></tr>
-        <tr><td><img src='/includes/welcome/img/blue.png' title='blue'></td><td><input name='blue' type='radio' tabindex='1' value='on'></td><td><input name='blue' type='radio' tabindex='1' value='off'></td><td><input name='blue' type='radio' tabindex='1' value='blink'></td></tr>
-        <tr><td><img src='/includes/welcome/img/red.png' title='red'></td><td><input name='red' type='radio' tabindex='1' value='on'></td><td><input name='red' type='radio' tabindex='1' value='off'></td><td><input name='red' type='radio' tabindex='1' value='blink'></td></tr>
-        <tr><td></td><td colspan='3'><input name='verify_pineapple' type='submit' value='Continue' tabindex='4'></td></tr>
-      <table>
-      
-    </form>
-    ";
+    if ($_SESSION['secure']) {
+        header("Location: /?action=reset_dips");
+    }
+    $dip_status = checkDIPStatus();
+    if ($dip_status == "wired") {
+        exec("killall hostapd");
+        exec("ifconfig wlan0 down");
+        exec("ifconfig wlan0-1 down");
+        $_SESSION['secure'] = true;
+        header("Location: /?action=reset_dips");
+    } elseif ($dip_status == "wireless") {
+        $_SESSION['secure'] = true;
+        header("Location: /?action=reset_dips");
+    } else {
+        $text = "<h1>Security Notice</h1>";
+        $text .= "<p>For security purposes, we recommend that the initial setup is performed with the WiFi radios turned off.</p>";
+        $text .= "<p>To continue, you <b>must</b> choose between two DIP switch configurations:</p>";
+        $text .= "<img src='/includes/welcome/img/dips.gif'>";
+        $text .= "<table>";
+        $text .= "<tr><td><img src='/includes/welcome/img/10001.gif' style='margin-right: 15px;'></td><td> Disable the radios and continue with the initial setup over ethernet. (secure)</td></tr>";
+        $text .= "<tr><td><img src='/includes/welcome/img/11011.gif' style='margin-right: 15px;'> </td><td> Keep the radios enabled and proceed with setup. (insecure)</td></tr>";
+        $text .= "</table>";
+        $text .= "<h2><a href='/?action=secure_setup'>Continue</a></h2>";
+    }
+
     return $text;
 }
 
-function verifyPineapple($post)
+function resetDips()
 {
-    $action_array = array('off', 'on', 'blink');
-    if (isset($_SESSION['verify_pattern'])
-        && isset($post['amber'])
-        && isset($post['blue'])
-        && isset($post['red'])
-    ) {
-        $current_state = str_split($_SESSION['verify_pattern']);
-        if (array_search($post['amber'], $action_array) == $current_state[0]
-            && array_search($post['blue'], $action_array) == $current_state[1]
-            && array_search($post['red'], $action_array) == $current_state[2]
-        ) {
-            $_SESSION['verified'] = true;
-            return passwordForm();
-        }
+    if (checkDIPStatus() == "reset") {
+        header("Location: /?action=set_password");
     }
-    generateLEDpattern();
-    return verifyForm(true);
+    $text = "<h1>Reset DIP switches</h1>";
+    $text .= "<p>To continue, please reset your DIP switches.</p>";
+    $text .= "<img src='/includes/welcome/img/11111.gif'>";
+    $text .= "<h2><a href='/?action=reset_dips'>Continue</a></h2>";
+
+    return $text;
 }
 
-function generateLEDpattern()
+function checkDIPStatus()
 {
-    exec("kill -9 $(ps aux | grep '[b]link' | awk '{print $1}')");
+    exportDIPSwitches();
+    
+    $dip2 = file_get_contents("/sys/class/gpio/gpio13/value");
+    $dip3 = file_get_contents("/sys/class/gpio/gpio15/value");
+    $dip4 = file_get_contents("/sys/class/gpio/gpio16/value") * (-1) + 1;
 
-    $color_array = array('amber', 'blue', 'red');
-    $action_array = array('off', 'on', 'blink');
-
-    $_SESSION['verify_pattern'] = '';
-
-    for ($i=0; $i<3; $i++) {
-        switch ($action_array[mt_rand(0, 2)]) {
-            case 'blink':
-                $_SESSION['verify_pattern'] .= '2';
-                exec("ash -c 'blink;while true; do pineapple led {$color_array[$i]} on; sleep 1; pineapple led {$color_array[$i]} off; sleep 1; done' &>/dev/null &");
-                break;
-            case 'on':
-                $_SESSION['verify_pattern'] .= '1';
-                exec("pineapple led {$color_array[$i]} off");
-                exec("pineapple led {$color_array[$i]} on");
-                break;
-            default:
-                $_SESSION['verify_pattern'] .= '0';
-                exec("pineapple led {$color_array[$i]} off");
-        }
+    if ($dip2 == 0 && $dip3 == 0 && $dip4 == 0) {
+        return "wired";
+    } elseif ($dip2 == 1 && $dip3 == 0 && $dip4 == 1) {
+        return "wireless";
+    } elseif ($dip2 == 1 && $dip3 == 1 && $dip4 == 1) {
+        return "reset";
+    } else {
+        return "";
     }
+
+    unexportDIPSwitches();
+
+    return "wireless";
+}
+
+function exportDIPSwitches()
+{
+    file_put_contents("/sys/class/gpio/export", "13");
+    file_put_contents("/sys/class/gpio/export", "15");
+    file_put_contents("/sys/class/gpio/export", "16");
+}
+
+function unexportDIPSwitches()
+{
+    file_put_contents("/sys/class/gpio/unexport", "13");
+    file_put_contents("/sys/class/gpio/unexport", "15");
+    file_put_contents("/sys/class/gpio/unexport", "16");
 }

@@ -84,6 +84,7 @@ toggle[checked] {
     display: inline;
     width: 12ex;
     margin-left: 3ex;
+    cursor: pointer;
 }
 
 .statusBar_view_toggle {
@@ -520,6 +521,20 @@ help:before {
     left:0px;
     right:0px; 
     bottom:0px;
+}
+
+.progress_bar {
+    border: 1px lime solid;
+    max-width: 150px;
+    height: 1em;
+}
+.progress_bar > span {
+    width: 0%;
+    height: 100%;
+    background-color: lime;
+    display: block;
+    position: relative;
+    overflow: hidden;
 }
 
 

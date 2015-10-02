@@ -8,10 +8,11 @@ include_once('/pineapple/includes/api/tile_functions.php');
 
 $pineapple->drawTabs(
     [
-    'report.php'=>'Clients',
-    'pineap.php'=>'PineAP',
-    'config.php'=>'Karma',
-    'log.php'=>'Log'
+    'report.php' => 'Clients',
+    'tracking.php' => 'Tracking',
+    'pineap.php' => 'PineAP',
+    'config.php' => 'Karma',
+    'log.php' => 'Log'
     ]
 );
 

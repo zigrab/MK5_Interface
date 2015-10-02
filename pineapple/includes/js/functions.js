@@ -244,7 +244,13 @@ function refresh_small(name, type){
 * and css.
 * @param  {string} message Message to popup
 */
-function popup(message){
+function popup(message, data){
+    if (data !== undefined) {
+        popup.data = data;
+    } else {
+        delete popup.data;
+    }
+
     $('.popup_content').html(message);
     $('.popup').css('visibility', 'visible');
 }
@@ -256,6 +262,7 @@ TODO
 function close_popup(){
     $('.popup').css('visibility', 'hidden');
     $('.popup_content').html('');
+    delete popup.data;
 }
 
 
@@ -295,6 +302,13 @@ $(document).keyup(function(e){
         }
     }
 });
+}
+
+
+function logout(){
+    $.get('/?logout', function(){
+        window.location = "/";
+    });
 }
 
 
@@ -517,6 +531,23 @@ function toggle_hidden_bar_mobile() {
     $('.hidden_bar').slideToggle('fast');
 }
 
+
+function progress_bar(id, duration) {
+    var current_percent = 0;
+    var progress_bar = $("#" + id +".progress_bar > span");
+    duration = parseInt(duration);
+
+    if (progress_bar.length) {
+        var interval = setInterval(function() {
+            progress_bar.width(current_percent++ + "%");
+            if (current_percent > 100) {
+                clearInterval(interval);
+            }
+        }, 1000*(duration/100));
+    }
+}
+
+
 /**
 * jQuery function to send any form over AJAX.
 * This function must be called in the form
@@ -585,6 +616,8 @@ $.fn.AJAXifyForm = function(callback){
 
 return this;
 }
+
+
 
 
 /*

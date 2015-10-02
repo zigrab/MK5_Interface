@@ -10,45 +10,10 @@ $pineapple->magicToggleFunctions(true);
 if (isset($_GET['action'])) {
     switch ($_GET['action']) {
         case 'start_pineap':
-            $mac = exec("ifconfig wlan0 | grep HWaddr | awk '{print $5}'");
-            $chan = exec("iw dev wlan0 info | grep channel | awk '{print $2}'");
-            
-            $iface = exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'");
-            if (trim($iface) == "") {
-                $iface = exec("airmon-ng start wlan1 | grep 'enabled on' | awk '{print $5}' | sed s'/.$//'");
-            }
-
-            exec("ifconfig wlan1 down");
-            exec("echo 'pinejector {$iface}' | at now");
-            exec("echo 'pineap {$chan} {$mac}' | at now");
+            toggle_pineap(true);
             break;
         case 'stop_pineap':
-            exec("killall pinejector");
-            exec("killall pineap");
-            break;
-        case 'start_beaconer':
-            $pineAP = new PineAP();
-            $pineAP->enableBeaconer();
-            break;
-        case 'stop_beaconer':
-            $pineAP = new PineAP();
-            $pineAP->disableBeaconer();
-            break;
-        case 'start_responder':
-            $pineAP = new PineAP();
-            $pineAP->enableResponder();
-            break;
-        case 'stop_responder':
-            $pineAP = new PineAP();
-            $pineAP->disableResponder();
-            break;
-        case 'start_harvester':
-            $pineAP = new PineAP();
-            $pineAP->enableHarvester();
-            break;
-        case 'stop_harvester':
-            $pineAP = new PineAP();
-            $pineAP->disableHarvester();
+            toggle_pineap(false);
             break;
         case 'clear_ssids':
             $pineAP = new PineAP();
@@ -148,17 +113,17 @@ function toggle_pineap($enable)
         $mac = exec("ifconfig wlan0 | grep HWaddr | awk '{print $5}'");
         $chan = exec("iw dev wlan0 info | grep channel | awk '{print $2}'");
         
-        $iface = exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'");
+        $iface = exec("ifconfig -a | grep wlan1mon | head -n1 | awk '{print $1}'");
         if (trim($iface) == "") {
-            $iface = exec("airmon-ng start wlan1 | grep 'enabled on' | awk '{print $5}' | sed s'/.$//'");
+            exec("airmon-ng start wlan1");
+            $iface = "wlan1mon";
         }
 
-        exec("ifconfig wlan1 down");
-        exec("echo 'pinejector {$iface}' | at now");
         exec("echo 'pineap {$chan} {$mac}' | at now");
+        exec("echo 'pinejector {$iface}' | at now");
     } else {
-        exec("killall pinejector");
         exec("killall pineap");
+        exec("killall pinejector");
     }
     return true;
 }
@@ -257,6 +222,29 @@ if (isset($_GET['save_autostart'])) {
     exec("uci commit pineap");
 }
 
+if (isset($_GET['tracking'])) {
+    if (isset($_POST['tracking_script'])) {
+        file_put_contents("/etc/pineapple/tracking_script_user", str_replace("\r", "", $_POST['tracking_script']));
+        echo "<span class='success'>Script Saved.</span>";
+    } else {
+        $mac = $_POST['tracking_mac'];
+        $add = isset($_POST['tracking_add_mac']) ? true : false;
+        if (strlen($mac) == 17) {
+            if ($add) {
+                file_put_contents("/etc/pineapple/tracking_list", "{$mac}\n", FILE_APPEND);
+                exec("/usr/bin/pineapple/uds_send /var/run/log_daemon.sock 'track:$mac'");
+                echo "<span class='success'>MAC Added sucessfully.</span>";
+            } else {
+                exec("sed -r '/^({$mac})$/d' -i /etc/pineapple/tracking_list");
+                exec("/usr/bin/pineapple/uds_send /var/run/log_daemon.sock 'untrack:$mac'");
+                echo "<span class='success'>MAC Removed sucessfully.</span>";
+            }
+        } else {
+            echo "<span class='error'>Please specify a valid MAC</span>";
+        }
+    }
+}
+
 if (isset($_POST['karma_log_location'])) {
     file_put_contents("/etc/pineapple/karma_log_location", $_POST['karma_log_location']);
     echo "<font color='lime'>Log Location changed successfully to '".$_POST['karma_log_location']."'. Changes will take effect after a reboot.</font>";
@@ -301,15 +289,30 @@ if (isset($_GET['karma_ssidFilter_add'])) {
 }
 
 if (isset($_GET['deauth'])) {
-    $target = substr($_GET['deauth'], 0, 17);
-    $source = substr($_GET['deauth'], 17, 17);
-    $channel = substr($_GET['deauth'], 43);
+    $target = $_POST['target'];
+    $source = $_POST['source'];
+    $channel = substr($_POST['channel'], 9, 2);
+    $multiplier = $_POST['multiplier'];
 
     $pineAP = new PineAP();
 
-    if ($pineAP->deauth($target, $source, $channel)) {
-        echo "success";
+    if (!is_array($target)) {
+        if ($pineAP->deauth($target, $source, $channel, $multiplier)) {
+            echo "success";
+        }
+    } else {
+        $success = 0;
+        foreach ($target as $client) {
+            if ($pineAP->deauth($client, $source, $channel, $multiplier)) {
+                $success = 1;
+            } else {
+                $success = 0;
+            }
+        }
+        echo ($success == 1) ? "success" : "";
     }
+
+
 
 }
 

@@ -1,0 +1,85 @@
+checkInternet() {
+    ping -c1 -W3 -q 8.8.8.8 &> /dev/null && {
+        echo "online"
+    } || {
+        echo "offline"
+    }
+}
+
+sendEmail() {
+    tar_gz=$1
+    to=$(uci get reporting.ssmtp.to)
+    from=$(uci get reporting.ssmtp.from)
+    email_body="To:$to\nFrom:$from\nSubject:WiFi Pineapple Report: $(date)\n\nPlease see the attached file."
+
+    date=$(date +%Y-%m-%d-%H:%M)
+
+    echo -e $email_body | (cat - && cat $tar_gz | uuencode "WiFi_Pineapple_Report_$(date +%Y-%m-%d-%H-%M).tar.gz") | ssmtp $to  &> /dev/null && {
+        echo "$date: Successfully sent email to $to" >> /tmp/reporting.log
+    } || {
+        echo "$date: Failed to send email to $to" >> /tmp/reporting.log
+    }
+}
+
+getPineAPReport() {
+    [[ "$(uci get reporting.settings.log)" == "1" ]] && {
+        cp /tmp/pineap.log /sd/tmp/report/pineap.log
+        [[ "$(uci get reporting.settings.clear_log)" == "1" ]] && {
+            echo "" > /tmp/pineap.log
+        }
+    }
+}
+
+getClientReport() {
+    [[ "$(uci get reporting.settings.client)" == "1" ]] && {
+        /usr/bin/pineapple/generate_probe_report > /sd/tmp/report/probing_clients.csv
+    }
+}
+
+getSiteReport() {
+    [[ "$(uci get reporting.settings.survey)" == "1" ]] && {
+        duration=$(uci get reporting.settings.duration)
+
+        /usr/bin/pineapple/site_survey $duration > /sd/tmp/report/site_survey
+    }
+}
+
+getTrackedClients() {
+    [[ "$(uci get reporting.settings.tracking)" == "1" ]] && {
+        cp /tmp/tracking.report /sd/tmp/report/tracked_clients &> /dev/null
+        echo "" > /tmp/tracking.report
+    }
+}
+
+generateReport() {
+    rm -rf /sd/tmp/report &> /dev/null
+    mkdir -p /sd/tmp/report &> /dev/null
+    mkdir -p /sd/wifipineapple_reports &> /dev/null
+
+    archive_name="WiFi_Pineapple_Report_$(date +%Y-%m-%d-%H-%M).tar.gz"
+
+    getPineAPReport
+    getClientReport
+    getTrackedClients
+    getSiteReport
+
+    tar -C /sd/tmp -pczhf /sd/wifipineapple_reports/$archive_name report
+
+    [[ "$(uci get reporting.settings.send_email)" == "1" ]] && {
+        [[ "$(checkInternet)" == "online" ]] && {
+            sendEmail /sd/wifipineapple_reports/$archive_name
+        } || {
+            echo "$(date +%Y-%m-%d-%H:%M): Failed to email report - no internet connection available" >> /tmp/reporting.log
+        }
+    }
+
+    [[ "$(uci get reporting.settings.save_report)" != "1" ]] && {
+        rm -rf /sd/wifipineapple_reports/$archive_name
+    } || {
+        echo "$(date +%Y-%m-%d-%H:%M): Report saved to SD card" >> /tmp/reporting.log
+    }
+
+    rm -rf /sd/tmp/report &> /dev/null
+}
+
+generateReport

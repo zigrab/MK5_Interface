@@ -18,8 +18,8 @@ def communicate(command):
 def start_pineAP():
     print "Starting PineAP. This may take a few seconds."
     stop_pineAP()
-    os.system("if ! ifconfig -a | grep -q mon0; then airmon-ng start wlan1 &>/dev/null; fi;")
-    os.system("echo 'pinejector mon0'| at now &> /dev/null")
+    os.system("if ! ifconfig -a | grep -q wlan1mon; then airmon-ng start wlan1 &>/dev/null; fi;")
+    os.system("echo 'pinejector wlan1mon'| at now &> /dev/null")
     os.system("mac=$(ifconfig wlan0 | grep HWaddr | awk '{print $5}'); chan=$(iw dev wlan0 info | grep channel | awk '{print $2}'); echo 'pineap '$chan' '$mac | at now &> /dev/null")
     print "PineAP started."
 
@@ -109,9 +109,13 @@ def interpret_commands(commands):
         else:
             fail = True
     elif commands[1] == "deauth":
-        if len(commands) == 5:
+        if len(commands) >= 5:
             if check_MAC(commands[2]) and check_MAC(commands[3]):
-                communicate("deauth:" + commands[2] + commands[3] + commands[4])
+                if len(commands) == 6:
+                    multiplier = commands[5]
+                else:
+                    multiplier = "1";
+                communicate("deauth:" + commands[2] + commands[3] + commands[4].zfill(2) + multiplier)
             else:
                 fail = True
         else:
@@ -159,9 +163,10 @@ def print_usage():
     print half_tab + "clear_ssids    \t\t- Clears all SSIDs"
     print ""
 
-    print half_tab + "deauth [client] [AP] [channel] - Deauthenticates client from an AP."
-    print half_tab + "                                 Client / AP eg: aa:bb:cc:dd:ee:ff"
-    print half_tab + "                                 Channel: 1-14"
+    print half_tab + "deauth [client] [AP] [channel] [multip] - Deauthenticates client from an AP."
+    print half_tab + "                                          Client / AP eg: aa:bb:cc:dd:ee:ff"
+    print half_tab + "                                          Channel: 1-14"
+    print half_tab + "                                          Multiplier (optional): Integer"
 
     print ""
 

@@ -1,3 +1,9 @@
+function tracking_callback(data) {
+    refresh_current_tab(function(){
+        $("#tracking_message").html("<center>" + data + "</center>");
+    });
+}
+
 function karma_reload_config(){
     refresh_current_tab();
 }
@@ -108,7 +114,6 @@ function refresh_report(){
 }
 
 function save_pineap_settings(data) {
-    console.log(data);
     refresh_current_tab(function(){
         $("#pineap_message").html("<center><span class='success'>Settings Saved.</span></center>");
     });

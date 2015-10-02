@@ -3,6 +3,13 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+
+if (file_exists('/pineapple/includes/welcome/')) {
+    header("Location: /");
+    exit(0);
+}
+
+
 $file = explode("\n", file_get_contents('/etc/shadow'));
 $string = explode(':', $file[0]);
 $string =  explode('$', $string[1]);
@@ -17,9 +24,13 @@ $actual_pass = $salt.$password;
 
 if (isset($_POST['login'])) {
     if ($submitted_pass == $actual_pass && $_POST['username'] == "root") {
-
         $_SESSION['logged_in'] = true;
-        $_SESSION['_csrfToken'] = sha1(session_id());
+
+
+        $random_seed = rand(0, getrandmax());
+        $_SESSION['_csrfToken'] = sha1(session_id() . $random_seed);
+        
+
         header('Location: /');
 
     } else {

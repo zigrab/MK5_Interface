@@ -22,7 +22,7 @@ if (isset($_GET['noJS'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <meta name="_csrfToken" content="<?=$_SESSION['_csrfToken']?>">
-    <link rel="stylesheet" type="text/css" href="includes/css/styles.php?version=<?=file_get_contents("/etc/pineapple/pineapple_version")?>" />
+    <link rel="stylesheet" type="text/css" href="includes/css/styles.css?version=<?=file_get_contents("/etc/pineapple/pineapple_version")?>" />
     <?php echo (file_exists('/pineapple/includes/css/disable_help')) ? '<style>help:before{display: none;}</style>' : ''; ?>
     <script src="includes/js/jquery.min.js"></script>
     <script src="includes/js/functions.js?version=<?=file_get_contents("/etc/pineapple/pineapple_version")?>" type="text/javascript" ></script>
@@ -41,8 +41,8 @@ if (isset($_GET['noJS'])) {
                     <span><a href="#" onclick="clear_notifications()">- clear -</a></span>
                 </div>
             </span>
-            <span class="statusBar_clock">Clients: {-}</span>
-            <span class='logout'><a href="/?logout"><img src="/includes/img/exit.png"></a></span>
+            <span class="statusBar_clock" onclick="draw_large_tile('pineap', 'system')">Clients: {-}</span>
+            <span class='logout'><a href="#" onclick="logout()"><img src="/includes/img/exit.png"></a></span>
         </div>
         <span>
             <img class='notification_img' src="/includes/img/notification.gif">

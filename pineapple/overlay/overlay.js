@@ -1,4 +1,4 @@
-window.overlay_data = {}
+window.overlay_data = {};
 window.overlay_data['running'] = false;
 window.overlay_data['auto_scan'] = false;
 
@@ -125,7 +125,10 @@ function draw_ap_data(ap_list)
     $(".overlay_col").html("");
     var col = 1;
     for (var bssid in ap_list) {
-        var SSID = (ap_list[bssid]['ESSID'].trim() == "") ? "<span class='error'>Hidden SSID</span>" : "<a href='#' class='success' onclick='recon_ap_action(\"" + escape_ssid(ap_list[bssid]['ESSID']) + "\"); return false;'>" + ap_list[bssid]['ESSID'] + "</a>"; 
+        if (ap_list[bssid] === undefined || ap_list[bssid]['ESSID'] === undefined) {
+            continue;
+        }
+        var SSID = (ap_list[bssid]['ESSID'].trim() == "") ? "<span class='error'>Hidden SSID</span>" : "<a href='#' class='success' onclick='recon_ap_action(\"" + escape_ssid(ap_list[bssid]['ESSID']) + "\"); return false;'>" + ap_list[bssid]['ESSID'] + "</a>";
         var ap_item = "<div class='overlay_ap'><fieldset id='"+bssid.replace(/:/g,'')+"'>";
         ap_item += "<legend>" + SSID + " - "+ ap_list[bssid]['quality'] +"&nbsp;</legend>";
         if(typeof ap_list[bssid]['security'] !== "undefined"){
@@ -180,7 +183,7 @@ function overlay_toggle_scan() {
 
 function overlay_start_scan() {
     $("#overlay_start_stop").text("STOP SCAN");
-    $(".overlay_message").html("<img style='width: 1.0em;' src='/includes/img/throbber.gif'>");
+    $(".overlay_message").html("<img style='width: 1.0em;' src='/includes/img/throbber.gif'><div class='progress_bar' id='overlay_progress'><span></span></div>");
 
     window.overlay_data['running'] = true;
 
@@ -188,7 +191,6 @@ function overlay_start_scan() {
     var scan_type = $("[name=scan_type]:checked").val();
     var scan_duration = parseInt($("[name=scan_duration]").val());
     var scan_auto = $("[name=auto_scan]").prop("checked");
-  
 
     if (scan_auto) {
         window.overlay_data['auto_scan'] = false;
@@ -212,6 +214,7 @@ function overlay_start_scan() {
 function overlay_scan(duration, type) {
     switch(type){
         case "ap_client":
+            progress_bar("overlay_progress", duration+3);
             client_scan(duration);
             draw_data(true);
 
@@ -221,6 +224,7 @@ function overlay_scan(duration, type) {
 
         break;
         default:
+            progress_bar("overlay_progress", 12);
             ap_scan();
             draw_data(false);
         break;
@@ -241,30 +245,73 @@ function overlay_stop_scan() {
 function recon_ap_action(ssid) {
     var popup_html = "";
 
-    popup_html += "<b>Access Point Actions:</b><br /><br />";
-    popup_html += "<a href='#sys/pineap/pineap_add_ssid/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add to PineAP SSID list</a><br>";
-    popup_html += "<a href='#sys/pineap/karma_ssidFilter_add/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add SSID to Karma filter</a><br>";
-    popup_html += "<a href='#sys/pineap/karma_ssidFilter_del/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Remove SSID to Karma filter</a><br>";
-    popup(popup_html);
+    popup_html += "<center><h3>Access Point Actions</h3></center>";
+    popup_html += "Karma:<br>";
+    popup_html += "|--> <a href='#sys/pineap/karma_ssidFilter_add/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add to SSID filter</a><br>";
+    popup_html += "|--> <a href='#sys/pineap/karma_ssidFilter_del/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Remove from SSID filter</a><br>";
+    popup_html += "<br>PineAP:<br>";
+    popup_html += "|--> <a href='#sys/pineap/pineap_add_ssid/" + encodeURIComponent(escape_ssid(ssid)) + "/pineAP_add_ssid_callback'>Add to SSID list</a><br>";
+    popup_html += "|--> <a href='#' onclick='deauth_ap_clients()'>Deauthenticate all clients</a><br>";
+    popup(popup_html, [ssid]);
 }
 
 function recon_client_action(client) {
     var source = client.parent().parent().attr('id').replace(/(.{2})/g, '$1:').slice(0, -1);
     var target = client.text();
     var channel = client.parent().parent().find("#recon_chan").text();
-    var client_actions = "<a href='#sys/pineap/deauth/" + encodeURIComponent(target + source + channel) + "/pineAP_deauth_callback'>Deauth Client</a>";
+    var client_actions = '<center><h3>Client Actions</h3></center>';
+    client_actions += '|--> <a href="#" onclick="pineAP_deauth_client(\'' + target + '\', \'' + source + '\', \'' + channel + '\')">Deauth Client</a>';
 
     popup(client_actions);
 }
 
-function pineAP_deauth_callback(data) {
-    if (data.length) {
-        popup("<center><img style='width: 2.0em;' src='/includes/img/throbber.gif'></center>");
-        setTimeout(close_popup, 1000);
-    } else {
-        popup("<center><span class='error'>Error sending deauth. PineAP must be started.</span></center>");
-    }
+function deauth_ap_clients() {
+    var ap = $("a:contains('" + popup.data[0] + "')").closest("div.overlay_ap");
+    var source = ap.children().attr('id').replace(/(.{2})/g, '$1:').slice(0, -1);;
+    var channel = ap.find("#recon_chan").text();
+    var clients = [];
+    $("a:contains('" + popup.data[0] + "')").closest("div.overlay_ap").find(".overlay_clients").find("a").each(function(key, val){
+        clients.push($(val).text());
+    });
+    pineAP_deauth_client(clients, source, channel);
 }
+
+function pineAP_send_deauth() {
+    var multiplier = $("select[name='deauth_multiplier']").val();
+    $.post('/components/system/pineap/functions.php?deauth',
+        {
+            'target' : popup.data[0],
+            'source' : popup.data[1],
+            'channel' : popup.data[2],
+            'multiplier' : multiplier
+        }, function(data) {
+            if (data.length) {
+                popup("<center><img style='width: 2.0em;' src='/includes/img/throbber.gif'></center>");
+                setTimeout(close_popup, 1000);
+            } else {
+                popup("<center><span class='error'>Error sending deauth. PineAP must be started.</span></center>");
+            }
+        }
+    );
+}
+
+function pineAP_deauth_client(target, source, channel) {
+    var popup_html = "<center><h3>Deauthenticating Client(s)</h3></center>";
+    if (target.constructor === Array) {
+        popup_html += "You are about to deauthenticate multiple clients from " + source + ".<br><br>"
+    } else {
+        popup_html += "You are about to deauthenticate " + target + " from " + source + ".<br><br>"
+    }
+
+    popup_html += "Deauth Multiplier: <select name='deauth_multiplier'>";
+    for (var i = 1; i <= 10; i++) {
+        popup_html += "<option>" + i + "</option>";
+    }
+    popup_html += "<select><br><br>";
+    popup_html += "<a href='#' onclick='pineAP_send_deauth()'>Start Deauth</a>";
+    popup(popup_html, [target, source, channel]);
+}
+
 
 function pineAP_add_ssid_callback(ssid) {
     if (ssid.length) {
@@ -273,7 +320,7 @@ function pineAP_add_ssid_callback(ssid) {
     } else {
         popup("<span class='error'>Error adding SSID. PineAP must be turned on to add SSIDs to the list.</span>");
     }
-    
+
 }
 
 function escape_ssid(ssid) {

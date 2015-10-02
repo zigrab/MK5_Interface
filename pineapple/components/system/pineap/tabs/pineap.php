@@ -5,7 +5,7 @@ $pineAP = new PineAP();
 
 function get_pineap_status()
 {
-    exec("pgrep pinejector", $pids);
+    exec("pgrep pineap", $pids);
     if (empty($pids)) {
         return false;
     } else {

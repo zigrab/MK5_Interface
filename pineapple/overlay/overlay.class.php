@@ -48,13 +48,11 @@ class Overlay
 
         touch("/tmp/running.overlay");
 
-        if (trim(exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'")) == "") {
+        if (trim(exec("ifconfig -a | grep wlan1mon")) == "") {
             exec("airmon-ng start wlan1");
         }
-        $mon_interface = exec("ifconfig -a | grep $(echo $(ifconfig wlan1 | grep HWaddr | awk '{print $5}' | sed 's/:/-/g')) | head -n1 | awk '{print $1}'");
 
-        exec("ifconfig wlan1 down");
-        exec("echo 'pinesniffer ". $mon_interface . " ". $duration ."' | at now");
+        exec("echo 'pinesniffer wlan1mon ". $duration ."' | at now");
 
         unlink("/tmp/running.overlay");
     }

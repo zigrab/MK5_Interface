@@ -3,19 +3,20 @@ namespace pineapple;
 
 require_once("/pineapple/includes/welcome/welcome.inc.php");
 
+if (exec("echo 15 > /sys/class/gpio/export && cat /sys/class/gpio/gpio15/value && echo 15 > /sys/class/gpio/unexport") == "1") {
+    
+}
+
 if (session_status() == PHP_SESSION_NONE) {
         session_start();
 }
 
 switch ($_GET['action']) {
-    case 'verify_pineapple':
-        if (isset($_POST['verify_pineapple'])) {
-            $content = verifyPineapple($_POST);
-        } else {
-            exec("/etc/init.d/blink stop");
-            $content = verifyForm();
-            generateLEDpattern();
-        }
+    case 'secure_setup':
+        $content = secureSetup();
+        break;
+    case 'reset_dips':
+        $content = resetDips();
         break;
     case 'set_password':
         if (isset($_POST['set_password'])) {

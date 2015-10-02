@@ -1,0 +1,3 @@
+{
+    "email_config" : "<center><h3>Example email configuration</h3></center>From: user@gmail.com<br>To: user@company.com<br>SMTP Server: smtp.gmail.com<br>SMTP Port: 587<br>Domain: gmail.com<br>Username: user@gmail.com<br>Password: lamepasswordpassword123<br>Use TLS: Checked<br>Use STARTTLS: Checked"
+}
