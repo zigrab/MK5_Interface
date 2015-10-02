@@ -5,7 +5,7 @@
 #########################
 $name = 'Network';  #Name of tile
 $updatable = 'false';  #Should this tile auto-refresh
-$version = '2.1';
+$version = '2.3';
 
 
 #########################

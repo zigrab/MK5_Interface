@@ -2,7 +2,7 @@
 
 if(file_exists('/pineapple/includes/welcome/')){include('/pineapple/includes/welcome/welcome.php'); exit(0);}
 
-if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use the webinterface.";die();}
+if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use the webinterface. <a href='/'>Refresh</a>";die();}
 ?>
 <html>
 

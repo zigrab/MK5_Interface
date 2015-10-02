@@ -2,6 +2,15 @@
 
 include('/pineapple/includes/api/tile_functions.php');
 
+if(isset($_GET['action'])){
+  switch($_GET['action']){
+   case "reset_mobile":
+     echo reset_mobile();
+   break;
+  }
+}
+
+
 if(isset($_GET['ap_config'])){
   $SSID = $_POST['SSID'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
   $channel = $_POST['channel'];
@@ -55,6 +64,11 @@ if(isset($_GET['mobile_config'])){
   }
 
   echo updateMobile($_POST['ifname'], 
+    $_POST['ifname-custom'],
+    $_POST['proto-custom'],
+    $_POST['service-custom'],
+    $_POST['device-custom'],
+    $_POST['ppp_redial-custom'],
     $_POST['proto'], 
     $_POST['service'], 
     $_POST['device'], 
@@ -106,6 +120,11 @@ if(isset($_GET['update_route'])){
 }
 
 function updateMobile($ifname, 
+  $ifname_custom,
+  $proto_custom,
+  $service_custom,
+  $device_custom,
+  $ppp_redial_custom,
   $proto, 
   $service, 
   $device, 
@@ -118,6 +137,14 @@ function updateMobile($ifname,
   $dns, 
   $keepalive, 
   $pppd_options){
+
+if($ifname == "custom") { $ifname=$ifname_custom; }
+if($proto == "custom") { $proto=$proto_custom; }
+if($service == "custom") { $service=$service_custom; }
+if($device == "custom" ) { $device=$device_custom; }
+if($ppp_redial == "custom" ) { $ppp_redial=$ppp_redial_custom; }
+
+
   exec("uci delete network.wan2");
   exec("uci set network.wan2=interface");
   exec("uci set network.wan2.ifname=\"$ifname\"");
@@ -140,6 +167,25 @@ function updateMobile($ifname,
 
 if(isset($_GET['mobile_redial'])){
   echo mobileRedial();
+}
+
+function reset_mobile(){
+  exec("uci set network.wan2=' '");
+  exec("uci set network.wan2.ifname=' '");
+  exec("uci set network.wan2.proto=' '");
+  exec("uci set network.wan2.service=' '");
+  exec("uci set network.wan2.device=' '");
+  exec("uci set network.wan2.apn=' '");
+  exec("uci set network.wan2.username=' '");
+  exec("uci set network.wan2.password=' '");
+  exec("uci set network.wan2.defaultroute=' '");
+  exec("uci set network.wan2.ppp_redial=' '");
+  exec("uci set network.wan2.peerdns=' '");
+  exec("uci set network.wan2.dns=' '");
+  exec("uci set network.wan2.keepalive=' '");
+  exec("uci set network.wan2.pppd_options=' '");
+  exec("uci commit network");
+return '<font color="lime">Mobile Broadband Configuration Reset</font>';
 }
 
 function mobileRedial(){
@@ -308,8 +354,9 @@ if(isset($_GET['disconnect'])){
   $iface = (is_numeric($_GET['disconnect'])) ? $_GET['disconnect'] : "1";
   exec("uci delete wireless.@wifi-iface[$iface].key");
   exec("uci delete wireless.@wifi-iface[$iface].encryption");
-  exec("uci delete wireless.@wifi-iface[$iface].ssid");
   exec("uci set wireless.@wifi-iface[$iface].mode=sta");
+  exec("uci set wireless.@wifi-iface[$iface].network=lan");
+  exec("uci set wireless.@wifi-iface[$iface].ssid=' '");
   exec("uci commit wireless");
   exec("wifi");
   exec("ifconfig wlan"+$iface+" down");
