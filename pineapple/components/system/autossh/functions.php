@@ -66,7 +66,7 @@ function knownhost($knownhost_user, $knownhost_host){
 }
 
 function authorizedkeys($authorizedkeys){
-  file_put_contents('/root/.ssh/authorized_keys', $authorizedkeys);
+  file_put_contents('/root/.ssh/authorized_keys', str_replace("\r", "", $authorizedkeys));
   return '<font color="lime">Authorized Keys updated. Refresh Tab.</font>';
 }
 

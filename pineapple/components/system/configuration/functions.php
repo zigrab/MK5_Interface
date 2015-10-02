@@ -42,6 +42,10 @@ if(isset($_GET['dnsspoof'])){
   }
 }
 
+if(isset($_GET['change_tz'])){
+  echo change_tz($_POST['time']);
+}
+
 
 if(isset($_POST['dip'])){
 
@@ -102,13 +106,8 @@ function change_password($password, $repeat){
   }
 }
 
-function update_button($script){
-  file_put_contents('/etc/pineapple/wpsScript.sh', $script);
-  return '<font color="lime">Script updated.</font>';
-}
-
 function update_cron($crontab){
-  file_put_contents('/etc/crontabs/root', $crontab);
+  file_put_contents('/etc/crontabs/root', str_replace("\r", "", $crontab));
   exec('/etc/init.d/cron stop');
   exec('/etc/init.d/cron start');
 
@@ -116,17 +115,17 @@ function update_cron($crontab){
 }
 
 function update_css($css){
-  file_put_contents('/pineapple/includes/css/styles_main.css', $css);
+  file_put_contents('/pineapple/includes/css/styles_main.css', str_replace("\r", "", $css));
   return '<font color="lime">CSS updated.</font>';
 }
 
 function update_spoofhost($spoofhost){
-  file_put_contents('/etc/pineapple/spoofhost', $spoofhost);
+  file_put_contents('/etc/pineapple/spoofhost', str_replace("\r", "", $spoofhost));
   return '<font color="lime">Spoofhost file updated.</font>';
 }
 
 function update_index($page){
-  file_put_contents('/www/index.php', $page);
+  file_put_contents('/www/index.php', str_replace("\r", "", $page));
   return '<font color="lime">index.php updated.</font>';
 }
 
@@ -147,6 +146,20 @@ function execute($commands){
     }
   }
   return $html;
+}
+
+function change_tz($time){
+  if (in_array($time, range(-12, 12))) {
+    exec("echo GMT".$time." > /etc/TZ");
+    exec("uci set system.@system[0].timezone='GMT".$time."'");
+    echo "GMT".$time;
+  }else{
+    exec("echo UTC > /etc/TZ");
+    exec("uci set system.@system[0].timezone='UTC'");
+
+    echo "UTC";
+  }
+  exec("uci commit system");
 }
 
 ?>

@@ -6,7 +6,7 @@ if(isset($_GET['finish_setup'])){
     exec('rm -rf /pineapple/includes/welcome');
     exec('rm -rf /www/pineapple/');
     exec('mkdir -p /pineapple/components/infusions');
-    //exec('echo "/:root:\$p\$root" > /etc/config/httpd.conf');
+
     exec('/etc/init.d/blink disable');
     exec('/etc/init.d/sshd enable');
     exec('/etc/init.d/dip_handler enable');
@@ -34,6 +34,8 @@ if(isset($_GET['finish_setup'])){
     exec('uci set system.@led[-1].dev="wlan1"');
     exec('uci set system.@led[-1].mode="link tx rx"');
     exec('uci commit system');
+
+    file_put_contents("/etc/rc.local", "wifi detect > /etc/config/wireless\nuci commit wireless\necho -e \"\\n#Add your commands above this\\nexit 0\" > /etc/rc.local\nexit 0");
 
     exec('reboot');
   }
@@ -115,9 +117,10 @@ echo "
 $.get('/?finish_setup');
 
 setTimeout(function() {
-  setInterval(function() {
+  var interval = setInterval(function() {
     $.get('/', function(data) {
       if(data != ''){
+        clearInterval(interval);
         $('#finish').html('<h2><a href=\'/\'>Continue</a></h2>');
       }
     });

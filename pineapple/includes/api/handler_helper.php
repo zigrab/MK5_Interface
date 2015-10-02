@@ -45,6 +45,10 @@ function get_large_tile(){
 #Function to draw small tile
 function update_small_tile(){
   global $directory;
+  global $rel_dir;
+  if(substr($directory, 0, 3) == "/sd"){
+    $rel_dir = str_replace('/sd', '/components', $directory);
+  }
   include($directory."small_tile.php");
 }
 

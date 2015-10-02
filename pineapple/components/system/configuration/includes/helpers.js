@@ -38,3 +38,8 @@ function update_dips(data){
   update_message(data);
 
 }
+
+function update_tz(data){
+  update_message("<font color='lime'>Timezone changed.</font>");
+  $("#config_tz").text(data);
+}

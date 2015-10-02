@@ -114,7 +114,7 @@ function notification_handler(){
           $("div[id='"+tile_list[notification[1]]+"']").css('box-shadow', '2px 2px 50px 2px green inset');  
         }
       }
-      $(".statusBar").html(notification[0]);
+      $(".statusBar_content").html(notification[0]);
     }
   }, 2800);
 }

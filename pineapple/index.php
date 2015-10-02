@@ -4,7 +4,14 @@
 
 if(file_exists('/pineapple/includes/welcome/')){include('/pineapple/includes/welcome/welcome.php'); exit(0);}
 
-//include_once('/pineapple/includes/api/auth.php');
+if(isset($_GET['fix_wifi'])){
+  set_time_limit(300);
+  exec("wifi detect > /etc/config/wireless");
+  exec("uci commit wireless");
+  exec("wifi");
+  exit();
+}
+
 if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use this UI.";die();}
 ?>
 <html>

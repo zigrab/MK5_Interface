@@ -397,9 +397,9 @@ function edit_infusion($infusion){
 
 function save_edited_infusion($infusion, $small_tile, $large_tile, $functions){
   $path = "/pineapple/components/infusions/$infusion/";
-  file_put_contents($path.'small_tile.php', $small_tile);
-  file_put_contents($path.'large_tile.php', $large_tile);
-  file_put_contents($path.'functions.php', $functions);
+  file_put_contents($path.'small_tile.php', str_replace("\r", "", $small_tile));
+  file_put_contents($path.'large_tile.php', str_replace("\r", "", $large_tile));
+  file_put_contents($path.'functions.php', str_replace("\r", "", $functions));
   return "<font color='lime'>Infusion saved.</font>";
 }
 
