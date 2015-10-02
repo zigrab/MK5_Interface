@@ -8,12 +8,21 @@ if(isset($_GET['check_upgrade'])){
     $online_version = trim($online_data[0]);
     $online_md5 = trim($online_data[1]);
     if(version_compare($online_version, $current_version, ">")){
-      echo "An update (".$online_version.") has been found. <br /><a href='JAVASCRIPT: start_download()'>Flash</a>";
+      echo $online_version;
     }elseif(version_compare($online_version, $current_version, "==") && $current_version != "1.0.0"){
-      echo "No update was found. Re-Flash the current version $current_version? <br /><a href='JAVASCRIPT: start_download()'>Re-Flash</a>";
+      echo "1";
     }else{
       echo "0";
     }
+  }else{
+    echo "-1";
+  }
+}
+
+if(isset($_GET['load_changelog'])){
+  if(online()){
+    $current_changelog = file_get_contents("http://wifipineapple.com/?downloads&current_changelog");
+    echo $current_changelog;
   }else{
     echo "-1";
   }

@@ -154,6 +154,11 @@ if(isset($_GET['connect'])){
 
   $ssid = $ap->ESSID;
   $channel = $ap->channel;
+
+  if($ap->key != null){
+    $ap->key = rawurldecode($ap->key);
+  }
+
   exec("ifconfig wlan1 down");
   exec("uci set wireless.@wifi-iface[1].mode=sta");
   exec("uci set wireless.@wifi-iface[1].network=wan");

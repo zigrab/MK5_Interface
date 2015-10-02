@@ -1,4 +1,5 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
+
 <div style='text-align: right'><a href='#' class="refresh" onclick='get_bar_updates()'> </a></div>
 
 Refresh this tile to check for system updates.<br /><br />
@@ -7,7 +8,21 @@ Refresh this tile to check for system updates.<br /><br />
 
 
 <script type="text/javascript">
-  
+
+  $.get('/components/system/bar/functions.php?start_linker');
+  var linker = setInterval(function(){
+    $.get('/components/system/bar/functions.php?linker_status', function(data){
+      if(data == "completed"){
+        clearInterval(linker);
+      }
+      if(data == "linked"){
+        popup("<center>WiFi Pineapple Bar Linker</center><br />The infusion linker has detected orphaned infusions stored on your SD card.<br /><br />It has automatically added them to the webinterface. Please <a href='/'>reload</a> your webinterface.<br /><br />If you do not wish to do so right now, just exit out of this popup. The infusions will be visible upon a refresh of the webinterface.");        clearInterval(linker);
+      }
+    });
+  }, 5000);
+
+
+
   function get_bar_updates(){
     $('#bar_updates').html('<br /><br /><center><img style="height: 2em; width: 2em;" src="/includes/img/throbber.gif"></center>');
     $.get('/components/system/bar/functions.php?get_small_updates', function(data){

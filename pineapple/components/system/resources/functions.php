@@ -15,7 +15,7 @@ if(isset($_GET['format_sd'])){
   var interval = self.setInterval(function(){
     $.get('/components/system/resources/functions.php?format_status', function(data){
       if(data == 'completed'){
-        $('#format_status').html('<center><font color=\"lime\">Format completed.<br />You can now close this window.</font></center>');
+        $('#format_status').html('<center><font color=\"lime\">Format completed.<br />You can now close this window.<br /><br /><small>In case you have any issues, please re-boot the pineapple.</small></font></center>');
         self.clearInterval(interval);
       }
     });

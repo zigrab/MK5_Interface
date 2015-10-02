@@ -55,6 +55,22 @@ if(isset($_GET['package_status'])){
     echo "working";
   }
 }
+if(isset($_GET['start_linker'])){
+  exec("echo '/pineapple/components/system/bar/files/linker' | at now");
+}
+if(isset($_GET['linker_status'])){
+  if(file_exists("/tmp/infusion_linker_lock")){
+    echo "working";
+  }else{
+    if(file_exists("/tmp/infusion_linker_found")){
+      exec("rm /tmp/infusion_linker_found");
+      echo "linked";
+    }else{
+      echo "completed";
+    }
+  }
+}
+
 if(isset($_GET['download'])){
   download_packaged_infusion($_GET['download']);
 }
