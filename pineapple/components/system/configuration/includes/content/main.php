@@ -3,7 +3,7 @@
 <center><div id='config_message'></div></center>
 <fieldset>
   <legend>Time Zone Settings</legend>
-  Current timezone: <span id='config_tz'><?=exec("cat /etc/TZ")?></span><br /><br />
+  Current timezone: <span id='config_tz'><?=exec("date +%Z%z | cut -c 1-6")?></span><br /><br />
   <form id='config_change_time' method='POST' action='/components/system/configuration/functions.php?change_tz' onSubmit='$(this).AJAXifyForm(update_tz); return false;'>
     New Time Zone:
     <select name="time" id="time">
@@ -52,8 +52,11 @@
 <fieldset>
   <legend>Change Root Password</legend>
   <form id='config_change_password' method='POST' action='/components/system/configuration/functions.php?change_password' onSubmit='$(this).AJAXifyForm(update_message); return false;'>
-    Password: <input type='password' name='password' placeholder='********'/><br /> 
-    Repeat:   <input type='password' name='repeat' placeholder='********'/><br /> 
-    <input type='submit' name='change_password' value='Change Password'>
+    <table>
+    <tr><td>Old Password:</td><td><input type='password' name='old_password' placeholder='********'/></td></tr>
+    <tr><td>New Password:</td><td><input type='password' name='password' placeholder='********'/></td></tr>
+    <tr><td>Repeat Password:</td><td><input type='password' name='repeat' placeholder='********'/></td></tr> 
+    <tr><td><input type='submit' name='change_password' value='Change Password'></td></tr>
+    </table>
   </form>
 </fieldset>

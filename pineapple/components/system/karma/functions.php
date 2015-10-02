@@ -5,10 +5,10 @@ include('/pineapple/includes/api/tile_functions.php');
 if(isset($_GET['action'])){
 	switch ($_GET['action']) {
 		case 'start_karma':
-		exec("/etc/init.d/karma start");
+		exec("pineapple karma start");
 		break;
 		case 'stop_karma':
-		exec("/etc/init.d/karma stop");
+		exec("pineapple karma stop");
 		break;
 		case 'start_autostart':
 		autostart('enable');
@@ -24,6 +24,13 @@ if(isset($_GET['action'])){
 		break;
 		case 'change_ssid_mode':
 		change_ssid_mode();
+		break;
+		case 'get_macs':
+		echo get_macs();
+		break;
+		case 'get_ssids':
+		echo get_ssids();
+		break;
 		default:
 			# code...
 		break;
@@ -36,13 +43,14 @@ if(isset($_GET['change_ssid'])){
 
 if(isset($_GET['client_list'])){
 	if($_POST['remove_client'] == 'true'){
-		echo del_mac($_POST['client']);
+		echo del_mac($_POST['mac']);
 	}else{
-		echo add_mac($_POST['client']);
+		echo add_mac($_POST['mac']);
 	}
 }
 
 if(isset($_GET['ssid_list'])){
+	$_POST['ssid'] = addslashes($_POST['ssid']);
 	if($_POST['remove_ssid'] == 'true'){
 		echo del_ssid($_POST['ssid']);
 	}else{
@@ -105,24 +113,40 @@ function change_ssid($ssid, $persistence=false){
 }
 
 function add_ssid($ssid){
-	exec('hostapd_cli -p /var/run/hostapd-phy0 karma_add_ssid "'.$ssid.'"');
+	exec('pineapple karma add_ssid "'.$ssid.'"');
 	return "<font color='lime'>SSID added to list.</font>";
 
 }
 
 function del_ssid($ssid){
-	exec('hostapd_cli -p /var/run/hostapd-phy0 karma_del_ssid "'.$ssid.'"');
+	exec('pineapple karma del_ssid "'.$ssid.'"');
 	return "<font color='lime'>SSID removed from list.</font>";
 }
 
 function add_mac($mac){
-	exec('hostapd_cli -p /var/run/hostapd-phy0 karma_add_black_mac "'.$mac.'"');
+	exec('pineapple karma add_mac "'.$mac.'"');
 	return "<font color='lime'>MAC added to list.</font>";
 }
 
 function del_mac($mac){
-	exec('hostapd_cli -p /var/run/hostapd-phy0 karma_add_white_mac "'.$mac.'"');
+	exec('pineapple karma del_mac "'.$mac.'"');
 	return "<font color='lime'>MAC removed from list.</font>";
+}
+
+function get_ssids(){
+	exec("pineapple karma list_ssids", $ssid_list);
+	echo "<b>List of SSIDs:</b><br />";
+	foreach ($ssid_list as $ssid) {
+		echo $ssid."<br />";
+	}
+}
+
+function get_macs(){
+	exec("pineapple karma list_macs", $mac_list);
+	echo "<b>List of MAC addresses:</b><br />";
+	foreach ($mac_list as $mac) {
+		echo $mac."<br />";
+	}
 }
 
 ?>

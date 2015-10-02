@@ -5,7 +5,7 @@
 #########################
 $name = 'Logs';  #Name of tile
 $updatable = 'true';  #Should this tile auto-refresh
-$version = '1.1';
+$version = '1.3';
 
 
 #########################

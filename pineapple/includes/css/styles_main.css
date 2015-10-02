@@ -29,13 +29,30 @@
   width: 100%;
   margin-top: 2%;
   height: 90%;
+  overflow: auto;
 }
 
 .tiles_wrapper {
+  display: inline;
   margin: 0 auto;
   overflow-y: auto;
   height: 100%;
   text-align: center;
+}
+
+.tiles_wrapper_seperator {
+  display: inline-block;
+  overflow: auto;
+  width: 77%;
+  height: 100%;
+}
+
+.side_bar {
+  float: left;
+  display: inline-block;
+  height: 100%;
+  width: 22%;
+  border: 1px solid red;
 }
 
 .tile {
@@ -46,7 +63,7 @@
   display: inline-block;
 
   width: 22%;
-  min-width: 250px;
+  min-width: 280px;
   height: 250px;
   height: 30%;
   overflow: hidden;
@@ -60,6 +77,22 @@
   padding-bottom: 5px;
   cursor: pointer;
   background: green; /*#186018*/
+  width: 100%;
+}
+
+.tile_title_wrapper {
+  text-align: center;
+  text-decoration: underline;
+  padding-bottom: 5px;
+  background: green; /*#186018*/
+  width: 100%;
+}
+
+.tile_remove {
+  float: right;
+  font-weight: bold;
+  cursor: pointer;
+  padding-right: 3px;
 }
 
 .refresh {
@@ -104,6 +137,33 @@
   display: inline-block;
   font-size: 0;
   line-height: 0;
+}
+
+.hidden_bar {
+  position: absolute;
+  bottom: 1px;
+  background: black;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 1em;
+  padding-right: 1em;
+  color: white;
+  width: 98%;
+}
+
+.hidden_bar_item {
+  margin-right: 1em;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  padding-top: 0.5px;
+  padding-bottom: 0.5px;
+  width: 10em;
+  background: black;
+  cursor: pointer;
+  float: left;
+  overflow: hidden;
+  text-transform: capitalize;
+  border: solid 1px green;
 }
 
 #close {

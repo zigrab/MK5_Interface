@@ -1,7 +1,8 @@
 <html>
 <head>
-<meta http-equiv="REFRESH" content="0;url=redirect.php">
+	<title>Not Setup</title>
 </head>
 <body>
+Nothing here yet.
 </body>
 </html>

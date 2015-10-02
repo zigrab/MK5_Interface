@@ -25,7 +25,7 @@ if(empty($infusions)){
       $version = str_replace(array("'", ";"), '', exec('cat /pineapple/components/infusions/'.$infusion.'/handler.php | grep "version" | awk \'{print $3}\''));
 
       $link = "<a href='#sys/bar/remove_infusion/$infusion/remove_infusion' onclick='return confirm(\"Are you sure you want to remove \\\"$infusion\\\"?\")'>Remove</a>";
-      echo "<tr><td>$infusion</td><td><center>$version</center></td><td><center>".$size."kb</center></td><td>$link</td></tr>";
+      echo "<tr id='".$infusion."_tr'><td>$infusion</td><td><center>$version</center></td><td><center>".$size."kb</center></td><td>$link</td></tr>";
     }
 
   }

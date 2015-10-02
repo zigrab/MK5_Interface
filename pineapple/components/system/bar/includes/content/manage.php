@@ -29,7 +29,7 @@ if(empty($infusions) || file_get_contents('/pineapple/components/system/bar/file
       $remove_link = "<a href='#sys/bar/remove_created_infusion/$infusion/remove_infusion' onclick='return confirm(\"Are you sure you want to remove \\\"$infusion\\\"?\")'>Remove</a>";
       $edit_link = "<a href='#sys/bar/edit_infusion/$infusion/edit_infusion'>Edit</a>";
       $package_link = "<a href='#sys/bar/package_infusion/$infusion/popup'>Package</a>";
-      echo "<tr><td>$infusion</td><td><center>$version</center></td><td><center>".$size."kb</center></td><td>$remove_link</td><td>$edit_link</td><td>$package_link</td></tr>";   
+      echo "<tr id='".$infusion."_tr'><td>$infusion</td><td><center>$version</center></td><td><center>".$size."kb</center></td><td>$remove_link</td><td>$edit_link</td><td>$package_link</td></tr>";   
     }
 
   }

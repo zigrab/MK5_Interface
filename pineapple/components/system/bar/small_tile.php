@@ -16,7 +16,10 @@ Refresh this tile to check for system updates.<br /><br />
         clearInterval(linker);
       }
       if(data == "linked"){
-        popup("<center>WiFi Pineapple Bar Linker</center><br />The infusion linker has detected orphaned infusions stored on your SD card.<br /><br />It has automatically added them to the webinterface. Please <a href='/'>reload</a> your webinterface.<br /><br />If you do not wish to do so right now, just exit out of this popup. The infusions will be visible upon a refresh of the webinterface.");        clearInterval(linker);
+        load_tiles();
+        populate_hidden_tiles();
+        popup("<center>WiFi Pineapple Bar Linker</center><br />The infusion linker has detected orphaned infusions stored on your SD card.<br /><br />It has automatically added them to the webinterface. You may now close this popup.");        
+        clearInterval(linker);
       }
     });
   }, 5000);

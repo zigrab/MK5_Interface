@@ -76,7 +76,7 @@
   function connect(){
     var bssid = $('#ssid_form_select').find(":selected").val()
     var ap = networks[bssid];
-    ap["key"] = encodeURIComponent($("#psk").val());
+    ap["key"] = encodeURIComponent(btoa($("#psk").val()));
     $("#network_message").html("<img src='/includes/img/throbber.gif'><br /><font color='lime'>Connecting, please wait.</font><br /><br />")
 
     $.get('/components/system/network/functions.php?connect='+JSON.stringify(ap), function(data){

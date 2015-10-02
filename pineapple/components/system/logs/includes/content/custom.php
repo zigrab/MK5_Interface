@@ -27,7 +27,7 @@ $rel_dir = str_replace('/pineapple', '', $directory);
     exec('cat '.$file, $tail);
     echo "<pre>";
     foreach ($tail as $line) {
-      echo $line."<br />";
+      echo str_replace(" ", "&nbsp;", $line)."<br />";
     }
     echo "</pre>";
   }else{

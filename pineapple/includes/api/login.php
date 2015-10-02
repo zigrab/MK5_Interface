@@ -1,10 +1,9 @@
 <?php
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-$file = explode('/n', file_get_contents('/etc/shadow'));
+$file = explode("\n", file_get_contents('/etc/shadow'));
 $string = explode(':', $file[0]);
 $string =  explode('$', $string[1]);
 $salt =  '$1$'.$string[2].'$';

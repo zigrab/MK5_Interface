@@ -1,6 +1,5 @@
 <?php include_once('/pineapple/includes/api/tile_functions.php'); ?>
 <?php
-
 echo "MK5 Karma ";
 if (get_karma_status()) {
 echo "<font color=\"lime\"><b>Enabled</b></font>.&nbsp; | <a href='#sys/karma/action/stop_karma/karma_reload_tile'><b>Stop</b></a><br />";

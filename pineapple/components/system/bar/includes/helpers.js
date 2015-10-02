@@ -1,5 +1,6 @@
 function create_infusion(data){
   $('#messages').html(data);
+  load_tiles();
 }
 
 $(document).ready(function () {
@@ -25,8 +26,14 @@ function selectTabContent(id){
   });
 }
 
-function remove_infusion(){
-  window.location = '/';
+function remove_infusion(name){
+  hide_small_tile(name);
+  $.ajaxSetup({async:false});
+  $.get("/includes/api/tile_handler.php?action=unhide_tile&tile="+name);
+  $.ajaxSetup({async:true});
+  $("[id='"+name+"_hidden']").remove();
+  notify("The infusion '"+name+"' has been removed.");
+  $('#'+name+'_tr').remove();
 }
 
 function edit_infusion(data){

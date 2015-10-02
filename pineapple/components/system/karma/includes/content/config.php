@@ -15,7 +15,7 @@
 <br /><br />
 
 <fieldset>
-  <legend>Client Blacklisting</legend>
+  <legend>Client Blacklisting - <a href="#sys/karma/action/get_macs/popup">View List</a></legend>
   <form id="karma_client_bw_form" method="post" action="/components/system/karma/functions.php?client_list" onSubmit='$(this).AJAXifyForm(karma_handle_form); return false;'>
     <table>
       <tr><td>MAC to Blacklist:</td><td><input type='text' name='mac' /></td></tr>
@@ -28,11 +28,11 @@
 <br /><br />
 
 <fieldset>
-  <legend>SSID Black / White Listing</legend>
+  <legend>SSID Black / White Listing - <a href="#sys/karma/action/get_ssids/popup">View List</a></legend>
   Currently in <?=exec('hostapd_cli -p /var/run/hostapd-phy0 karma_get_black_white')?> mode. <a href='#sys/karma/action/change_ssid_mode/karma_reload_config'>Switch</a>
   <form id="karma_ssid_bw_form" method="post" action="/components/system/karma/functions.php?ssid_list" onSubmit='$(this).AJAXifyForm(karma_handle_form); return false;'>
     <table>
-      <tr><td>SSID to add to list:</td><td><input type='text' name='' /></td></tr>
+      <tr><td>SSID to add to list:</td><td><input type='text' name='ssid' /></td></tr>
       <tr><td><input type='submit' value='Add' onClick='$("#remove_ssid").val("false")'><input type='submit' value='Remove' onClick='$("#remove_ssid").val("true")'></td><td></td></tr>
       <input name='remove_ssid' id='remove_ssid' type='hidden' />
     </table>

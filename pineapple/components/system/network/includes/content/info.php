@@ -17,7 +17,7 @@ $rel_dir = str_replace('/pineapple', '', $directory);
   echo '</pre>';
   ?>
   <?php
-  $select = "<select>";
+  $select = "<select name='iface'>";
   exec("ifconfig | grep Link | awk '{print $1}' | grep -v lo", $interfaces);
   foreach($interfaces as $interface){
     $select .= "<option value='$interface'>$interface</option>";

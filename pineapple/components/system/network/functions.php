@@ -54,8 +54,9 @@ if(isset($_GET['disable'])){
 if(isset($_GET['update_route'])){
 
   $route = $_POST['route'];
+  $iface = $_POST['iface'];
   exec("route del default");
-  exec("route add default gw ".$route);
+  exec("route add default gw ".$route." ".$iface);
   exec("/etc/init.d/firewall restart");
   echo "<font color='lime'>Route changed successfully.</font>";
 }
@@ -156,7 +157,9 @@ if(isset($_GET['connect'])){
   $channel = $ap->channel;
 
   if($ap->key != null){
-    $ap->key = rawurldecode($ap->key);
+    $ap->key = base64_decode(rawurldecode($ap->key));
+    $ap->key = str_replace("\\", "\\\\", $ap->key);
+    $ap->key = str_replace("\"", "\\\"", $ap->key);
   }
 
   exec("ifconfig wlan1 down");

@@ -1,5 +1,4 @@
 <?php
-
 include('/pineapple/includes/api/tile_functions.php');
 
 if(isset($_GET['change_port'])){
@@ -7,7 +6,7 @@ if(isset($_GET['change_port'])){
 }
 
 if(isset($_GET['change_password'])){
-  echo change_password($_POST['password'], $_POST['repeat']);
+  echo ch_password($_POST['old_password'], $_POST['password'], $_POST['repeat']);
 }
 
 if(isset($_GET['update_button'])){
@@ -44,6 +43,10 @@ if(isset($_GET['dnsspoof'])){
 
 if(isset($_GET['change_tz'])){
   echo change_tz($_POST['time']);
+}
+
+if(isset($_GET['get_tz'])){
+  echo get_tz();
 }
 
 
@@ -97,12 +100,15 @@ function change_port($port){
   return '<font color="lime">Port changed to '.$port.'.</font>';
 }
 
-function change_password($password, $repeat){
+function ch_password($current, $password, $repeat){
   if($password != $repeat || trim($password) == ''){
     return "<font color='red'>There was an error. Please try again</font>";
   }else{
-    exec("/pineapple/components/system/configuration/files/change_password \"".addslashes($password)."\"");
-    return "<font color='lime'>The password has been changed.</font>";
+    if(change_password($current, $password)){
+      return "<font color='lime'>The password has been changed.</font>";
+    }else{
+      return "<font color='red'>Your current password is invalid.</font>";
+    }
   }
 }
 
@@ -160,6 +166,34 @@ function change_tz($time){
     echo "UTC";
   }
   exec("uci commit system");
+}
+
+function get_tz(){
+  echo exec("date +%Z%z | cut -c 1-6");
+}
+
+if(!function_exists("change_password")){
+  function change_password($current_pass, $new_pass){
+    $shadow_file = file_get_contents('/etc/shadow');
+    $root_array = explode(":", explode("\n", $shadow_file)[0]);
+    $salt = '$1$'.explode('$', $root_array[1])[2].'$';
+    $current_shadow_pass = $salt.explode('$', $root_array[1])[3];
+    $current_pass = crypt($current_pass, $salt);
+    $new_pass = crypt($new_pass, $salt);
+
+    if($current_shadow_pass == $current_pass){
+      $find = implode(":", $root_array);
+      $root_array[1] = $new_pass;
+      $replace = implode(":", $root_array);
+
+      $shadow_file = str_replace($find, $replace, $shadow_file);
+      file_put_contents("/etc/shadow", $shadow_file);
+
+      return true;
+    }else{
+      return false;
+    }
+  }
 }
 
 ?>

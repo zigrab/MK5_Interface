@@ -1,5 +1,4 @@
 <?php
-
 //Check if logged in
 include_once('/pineapple/includes/api/auth.php');
 

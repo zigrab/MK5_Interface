@@ -4,7 +4,7 @@
 <?php
 exec("dmesg", $dmesg);
 foreach($dmesg as $line){
-  echo $line."<br />";
+  echo str_replace(" ", "&nbsp;", $line)."<br />";
 }
 ?>
 <p id='dmsg_bottom' align="right"><a href="#dmsg_top">Jump to top</a></p>

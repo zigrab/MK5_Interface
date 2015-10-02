@@ -2,9 +2,10 @@
 
 INFUSION=$1
 
-touch /tmp/packager.status
+mkdir -p /sd/tmp/
+touch /sd/tmp/packager.status
 cd /pineapple/components/infusions/
 find ./$INFUSION -name "*.php" -exec grep -Lir "'/pineapple/includes/api/tile_functions.php'" {} \; | while read -r; do echo "<?php include_once('/pineapple/includes/api/tile_functions.php'); ?>" > /tmp/tmpfile; cat $REPLY >> /tmp/tmpfile; mv /tmp/tmpfile $REPLY; done;
-tar -pczhf /tmp/$INFUSION.tar.gz $INFUSION
+tar -pczhf /sd/tmp/$INFUSION.tar.gz $INFUSION
 
-rm /tmp/packager.status
+rm /sd/tmp/packager.status
