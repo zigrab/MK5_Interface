@@ -11,7 +11,7 @@ This section allows your to partition and format your SD card automatically.<br 
 Proceed with caution as this will delete ALL data off the SD card.<br />
 Please remove any device you may have plugged into the USB port before proceeding<br /><br />
 
-<a href="#sys/resources/format_sd/true/popup" onClick="return confirm('Are you sure? All data on the SD card will be erased!');">Format SD Card</a>
+<a href="#sys/resources/format_sd/true/popup" onClick="return confirm('Are you sure? All data on the SD card will be erased!');">Format SD Card - (Experimental)</a>
 
 
 <br /><br />

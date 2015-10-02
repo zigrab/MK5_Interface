@@ -3,9 +3,7 @@
 <center><div id='karma_report'>Loading data, please wait.</div></center>
 
 <script type="text/javascript">
-
-$(document).ready(function(){
-  refresh_report();
-});
-
+  setTimeout(function(){
+    refresh_report();
+  }, 0);
 </script>

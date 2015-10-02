@@ -42,6 +42,7 @@ if(isset($_POST['login'])){
         <link rel="stylesheet" type="text/css" href="includes/css/styles.php" />
         <script src="includes/js/jquery.min.js"></script>
         <noscript><meta http-equiv="refresh" content="0;url=index.php?noJS" /></noscript>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body style="background-color:black; color: white;">

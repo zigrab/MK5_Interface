@@ -157,7 +157,8 @@ if(isset($_GET['connect'])){
 
   $ap = json_decode($_GET['connect']);
 
-  $ap->ESSID = str_replace("\\", "\\\\", $ap->ESSID);
+  $ap->ESSID = base64_decode(rawurldecode($ap->ESSID));
+  //$ap->ESSID = str_replace("\\", "\\\\", $ap->ESSID);
   $ap->ESSID = str_replace("'", "'\"'\"'", $ap->ESSID);
   $ssid = $ap->ESSID;
 
@@ -165,7 +166,7 @@ if(isset($_GET['connect'])){
 
   if($ap->key != null){
     $ap->key = base64_decode(rawurldecode($ap->key));
-    $ap->key = str_replace("\\", "\\\\", $ap->key);
+    //$ap->key = str_replace("\\", "\\\\", $ap->key);
     $ap->key = str_replace("'", "'\"'\"'", $ap->key);
   }
 
@@ -231,7 +232,7 @@ if(isset($_GET['get_connection'])){
     foreach($info as $line){
       echo $line."\n";
     }
-    echo "<pre>";
+    echo "</pre>";
   }else{
     echo "not_associated";
   }

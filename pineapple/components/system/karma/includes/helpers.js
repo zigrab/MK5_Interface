@@ -31,6 +31,11 @@ function karma_handle_form(data){
   $('#karma_message').html(data);
 }
 
+function karma_change_log_location(data){
+  $('#karma_message').html(data);
+  $("")
+}
+
 function refresh_log(){
   $.get('/components/system/karma/functions.php?action=get_log', function(data){
     $('#karma_log').html(data);
@@ -51,10 +56,12 @@ function refresh_report(){
 
     var karma = data[2];
     for (var i = karma.length - 1; i >= 0; i--) {
+      console.log(karma[i]);
       if(karma[i].indexOf("Successful") !== -1){
         var client = new Array();
-        client[0] = karma[i].split(' ')[5];
-        client[1] = karma[i-1].slice(71);
+        client[0] = karma[i].split(' ')[4];
+        client[1] = karma[i-1].slice(60);
+        console.log(client);
         var exists = false;
         for (var j = clients.length - 1; j >= 0; j--) {
           if(clients[j][0] == client[0]){

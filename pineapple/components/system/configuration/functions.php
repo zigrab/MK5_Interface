@@ -43,7 +43,7 @@ if(isset($_GET['dnsspoof'])){
 
 if(isset($_GET['change_tz'])){
   if(trim($_POST['custom_zone']) != ""){
-    echo change_tz($_POST['custom_zone']);
+    echo change_tz($_POST['custom_zone'], true);
   }else{
     echo change_tz($_POST['time']);
   }
@@ -158,12 +158,15 @@ function execute($commands){
   return $html;
 }
 
-function change_tz($time){
+function change_tz($time, $custom=false){
   $time = trim($time);
+  if(!$custom){
+    $time = 'GMT'.$time;
+  }
   if (in_array($time, range(-12, 12))) {
-    exec("echo GMT".$time." > /etc/TZ");
-    exec("uci set system.@system[0].timezone='GMT".$time."'");
-    echo "GMT".$time;
+    exec("echo ".$time." > /etc/TZ");
+    exec("uci set system.@system[0].timezone='".$time."'");
+    echo $time;
   }else{
     exec("echo UTC > /etc/TZ");
     exec("uci set system.@system[0].timezone='UTC'");

@@ -40,6 +40,11 @@ if(isset($_GET['action'])){
 	}
 }
 
+if(isset($_POST['karma_log_location'])){
+	file_put_contents("/etc/pineapple/karma_log_location", $_POST['karma_log_location']);
+	echo "<font color='lime'>Log Location changed successfully to '".$_POST['karma_log_location']."'. Changes will take effect after a reboot.</font>";
+}
+
 if(isset($_GET['change_ssid'])){
 	$_POST['ssid'] = str_replace("'", '\'"\'"\'', $_POST['ssid']);
 	echo change_ssid($_POST['ssid'], $_POST['persistent']);
@@ -65,10 +70,17 @@ if(isset($_GET['ssid_list'])){
 
 
 function get_log(){
-	exec("cat /tmp/dhcp.leases; echo '\n'; cat /proc/net/arp; echo '\n'; grep KARMA: /tmp/karma-phy0.log |awk '!x[$0]++ || ($3 == \"Successful\") || ($3 == \"Checking\")'| sed -e 's/\(CTRL_IFACE \)\|\(IEEE802_11 \)//' | sed -n '1!G;h;\$p'", $log);
+	$leases = file_get_contents("/tmp/dhcp.leases");
+	$arp = file_get_contents("/proc/net/arp");
+	$karma_log = file(trim(file_get_contents("/etc/pineapple/karma_log_location"))."karma-phy0.log");
+
 	$html = "<pre>";
-	foreach($log as $line){
-		$html .= htmlspecialchars($line)."\n";
+	$html .= $leases."\n";
+	$html .= $arp."\n";
+	foreach(array_reverse($karma_log) as $line){
+		if(strpos($line, 'KARMA') !== FALSE){
+			$html .= $line;
+		}
 	}
 	$html .= "</pre>";
 
@@ -80,7 +92,7 @@ function get_detailed_report(){
 
 	array_push($logs, htmlspecialchars(file_get_contents('/tmp/dhcp.leases')));
 	array_push($logs, htmlspecialchars(file_get_contents('/proc/net/arp')));
-	exec("cat /tmp/karma-phy0.log | grep -E 'Successful|association'", $output);
+	exec("cut -d ' ' -f 6- $(cat /etc/pineapple/karma_log_location)karma-phy0.log | grep -E 'Successful|association'", $output);
 	$karma = array();
 	foreach($output as $line){
 		array_push($karma, htmlspecialchars($line));

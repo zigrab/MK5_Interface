@@ -38,3 +38,15 @@
     </table>
   </form>
 </fieldset>
+
+<br /><br />
+
+<fieldset>
+  <legend>Karma Log Location</legend>
+  <form id="karma_log_form" method="post" action="/components/system/karma/functions.php?karma_log" onSubmit='$(this).AJAXifyForm(karma_change_log_location); return false;'>
+    Log Location: <input type="text" value="<?=file_get_contents("/etc/pineapple/karma_log_location")?>" name="karma_log_location"> <input type="submit" value="Change Location">
+    <br /><br /><small>Please give the absolute path to the <b>folder</b> you wish to store the karma log in.</small>
+    <br /><small>Example: /tmp/ or /sd/</small>
+    <br /><br /><small>The specified directory <b>must</b> exist.</small>
+  </form>
+</fieldset>

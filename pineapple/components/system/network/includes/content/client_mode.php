@@ -27,6 +27,7 @@
     clearInterval(check_connection_interval);
   }
   var check_connection_interval = setInterval(check_connection, 10*1000);
+  var check_disconnection_interval = undefined;
 
   function load_ssid(){
     $("#ssid_form").html('Loading SSIDs..<br />');
@@ -76,9 +77,9 @@
   function connect(){
     var bssid = $('#ssid_form_select').find(":selected").val()
     var ap = networks[bssid];
+    ap["ESSID"] = encodeURIComponent(btoa(ap["ESSID"]));
     ap["key"] = encodeURIComponent(btoa($("#psk").val()));
     $("#network_message").html("<img src='/includes/img/throbber.gif'><br /><font color='lime'>Connecting, please wait.</font><br /><br />")
-
     $.get('/components/system/network/functions.php?connect='+JSON.stringify(ap), function(data){
       if(data == "done"){
         $("#network_message").html("<font color='lime'>Connection initiated. See below for connection details.</font><br /><br />")
@@ -92,16 +93,33 @@
 
   function disconnect(){
     $("#network_message").html("<img src='/includes/img/throbber.gif'><br /><font color='lime'>Disconnecting, please wait.</font><br /><br />")
+    $.get('/components/system/network/functions.php?disconnect');
+    if(check_connection_interval != undefined){
+      clearInterval(check_connection_interval);
+    }
+    check_disconnection_interval = setInterval(check_disconnection, 2.5*1000);
+  }
 
-    $.get('/components/system/network/functions.php?disconnect', function(data){
-      $("#network_message").html("<font color='lime'>Disconnected.</font><br /><br />")
-    });    
+  function check_disconnection(){
+    $.get('/components/system/network/functions.php?get_connection', function(data){
+      if(data == "not_associated"){
+        $("#network_message").html("<font color='lime'>Disconnected.</font><br /><br />");
+        clearInterval(check_disconnection_interval);
+        if(check_connection_interval != undefined){
+          clearInterval(check_connection_interval);
+        }
+        check_connection_interval = setInterval(check_connection, 5*1000);
+        $("#connection_information").html("Not connected.. Refreshing in 10s.");
+      }
+    });
   }
 
   function check_connection(){
     $.get('/components/system/network/functions.php?get_connection', function(data){
       if(data == "not_associated"){
         $("#connection_information").html("Not connected.. Refreshing in 10s.");
+      }else if(data == "<pre></pre>"){
+        //Do nothing
       }else{
         if($("#network_message").text() == "Connecting, please wait."){
           $("#network_message").html("<font color='lime'>Connection Established. See below for connection details.</font><br /><br />");

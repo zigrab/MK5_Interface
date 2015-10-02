@@ -12,7 +12,7 @@ if(isset($_GET['fix_wifi'])){
   exit();
 }
 
-if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use this UI.";die();}
+if(isset($_GET['noJS'])){echo "You need to have JavaScript enabled to use the webinterface.";die();}
 ?>
 <html>
 
